@@ -1,4 +1,4 @@
-import { BaseEntity } from '../../../shared/domain/model/base-entity.js';
+import { BaseEntity } from '../../shared/domain/model/base-entity.js';
 
 /**
  * Pure Domain Entity representing a physical automotive workshop (EuroMotors Workshop).
@@ -6,8 +6,8 @@ import { BaseEntity } from '../../../shared/domain/model/base-entity.js';
 export class Workshop extends BaseEntity {
   /**
    * @param {number} id - Unique identifier of the workshop.
-   * @param {string} name - Name of the workshop (e.g. EuroMotors Central - Miraflores).
-   * @param {string} taxId - RUC / Tax identifier of the workshop (e.g. 20123456789).
+   * @param {string} name - Name of the workshop.
+   * @param {string} taxId - RUC / Tax identifier.
    * @param {string} address - Physical address.
    * @param {string} phone - Contact phone number.
    */

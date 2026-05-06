@@ -5,15 +5,15 @@ import { BaseApi } from './base-api.js';
  * Generic orchestration endpoint class for standard REST CRUD operations.
  * Implements a single network client instance via Axios and automatically maps responses.
  */
-export class BaseApiEndpoint extends BaseApi {
+export class BaseEndpoint extends BaseApi {
   /**
    * @param {string} endpointUrl - The fully qualified URL of the target resource.
-   * @param {import('./base-assembler').BaseAssembler} assembler - The assembler used for domain mapping.
+   * @param {Object} assembler - The assembler used for domain mapping.
    */
   constructor(endpointUrl, assembler) {
     super();
-    if (this.constructor === BaseApiEndpoint) {
-      throw new TypeError("Cannot construct BaseApiEndpoint instances directly (abstract class)");
+    if (this.constructor === BaseEndpoint) {
+      throw new TypeError("Cannot construct BaseEndpoint instances directly (abstract class)");
     }
 
     this.endpointUrl = endpointUrl;

@@ -1,11 +1,10 @@
-import { BaseAssembler } from '../../shared/infrastructure/base-assembler.js';
-import { Workshop } from '../domain/model/workshop.js';
+import { Workshop } from '../domain/workshop.entity.js';
 
 /**
- * Assembler class responsible for mapping data between Workshop DTOs/resources and Workshop Domain Entities.
+ * Assembler class to map between Workshop Resource DTOs and Workshop Domain Entities.
  * Maps 'tax_id' from the network to the domain's 'taxId' camelCase property.
  */
-export class WorkshopAssembler extends BaseAssembler {
+export class WorkshopAssembler {
   /**
    * Maps a network resource (DTO) to a Workshop domain entity.
    * @param {Object} resource - The workshop resource from the network.
@@ -37,12 +36,9 @@ export class WorkshopAssembler extends BaseAssembler {
   }
 
   /**
-   * Maps a bulk network response to an array of Workshop domain entities.
-   * @param {Object} response - The bulk response.
-   * @returns {Workshop[]} Array of Workshop domain entities.
+   * Maps a bulk network response to domain entities.
    */
   toEntitiesFromResponse(response) {
-    // Standard json-server returns arrays directly, which is handled in BaseApiEndpoint.
     return [];
   }
 }
