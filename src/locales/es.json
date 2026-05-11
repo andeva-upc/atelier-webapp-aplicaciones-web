@@ -1,0 +1,12 @@
+{
+  "option": {
+    "home": "Inicio",
+    "work-orders": "Órdenes de Trabajo",
+    "inventory": "Inventario",
+    "customers": "Clientes",
+    "appointments": "Citas",
+    "telemetry": "Telemetría",
+    "billing": "Facturación",
+    "configuration": "Configuración"
+  }
+}

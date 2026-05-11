@@ -1,0 +1,9 @@
+body {
+  margin: 0;
+  height: 100%;
+}
+
+@font-face {
+  font-family: 'Zizou';
+  src: url('./fonts/Zizou Slab-Medium.otf') format('opentype');
+}
