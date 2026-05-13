@@ -51,7 +51,7 @@ const options = [
 aside {
   display: flex;
   flex-direction: column;
-  width: calc(2rem + 44px);
+  width: calc(2rem + 45px);
   min-height: 100vh;
   /* allow rounded buttons and shadows to be visible instead of being clipped */
   overflow: visible;
