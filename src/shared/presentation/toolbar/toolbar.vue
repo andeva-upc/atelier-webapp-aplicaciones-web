@@ -140,10 +140,15 @@ const openNotifications = () => {
 .toolbar-item {
   display: flex;
   align-items: center;
+  border-radius: 8px;
 }
 
 .language-wrapper {
   margin-right: 0.75rem;
+}
+
+.language-wrapper:hover {
+  background-color: #B3D4F8;
 }
 
 .language-button {
@@ -194,7 +199,11 @@ const openNotifications = () => {
 }
 
 .notifications-wrapper {
-  margin-right: 1rem;
+  margin-right: 0.75rem;
+}
+
+.notifications-wrapper:hover {
+  background-color: #B3D4F8;
 }
 
 .notification-button {
@@ -224,6 +233,10 @@ const openNotifications = () => {
 
 .user-wrapper {
   gap: 0.15rem;
+}
+
+.user-wrapper:hover {
+  background-color: #B3D4F8;
 }
 
 .user-button {
