@@ -23,6 +23,8 @@ const langMenuItems = ref([
   { label: 'English', command: () => changeLanguage('en') }
 ])
 
+const { t } = useI18n()
+
 // Computed properties
 const userInitials = computed(() => {
   return currentUser.value.name
@@ -35,9 +37,9 @@ const userInitials = computed(() => {
 const hasNotifications = computed(() => notificationCount.value > 0)
 
 // Menu items for user dropdown
-const userMenuItems = ref([
-  { label: 'Perfil', icon: 'pi pi-user' },
-  { label: 'Cerrar sesión', icon: 'pi pi-sign-out' }
+const userMenuItems = computed(() => [
+  { label: t('user.profile'), icon: 'pi pi-user' },
+  { label: t('user.logout'), icon: 'pi pi-sign-out' }
 ])
 
 const toggleUserMenu = (event) => {

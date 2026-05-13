@@ -8,5 +8,9 @@
     "telemetry": "Telemetría",
     "billing": "Facturación",
     "configuration": "Configuración"
+  },
+  "user": {
+    "profile": "Perfil",
+    "logout": "Cerrar sesión"
   }
 }
