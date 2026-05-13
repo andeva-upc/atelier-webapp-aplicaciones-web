@@ -8,5 +8,10 @@
     "telemetry": "Telemetría",
     "billing": "Facturación",
     "configuration": "Configuración"
+  },
+  "toolbar": {
+    "profile": "Perfil",
+    "logout": "Cerrar sesión",
+    "notifications": "Notificaciones"
   }
 }

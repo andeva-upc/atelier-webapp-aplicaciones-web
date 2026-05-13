@@ -8,5 +8,10 @@
     "telemetry": "Telemetry",
     "billing": "Billing",
     "configuration": "Configuration"
+  },
+  "toolbar": {
+    "profile": "Profile",
+    "logout": "Log out",
+    "notifications": "Notifications"
   }
 }
