@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { customersRoutes } from '../customers/presentation/customers-routes.js';
+import { inventoryRoutes } from '../inventory/presentation/inventory-routes.js';
 
 /**
  * Main Application Router.
@@ -12,7 +13,8 @@ const router = createRouter({
       path: '/',
       redirect: '/customers' // Temporary redirect until a home view is defined
     },
-    ...customersRoutes
+    ...customersRoutes,
+    ...inventoryRoutes
   ]
 });
 

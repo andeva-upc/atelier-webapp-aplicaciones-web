@@ -6,6 +6,7 @@ import i18n from './i18n';
 import pinia from './pinia.js';
 import router from './router/index.js';
 import PrimeVue from 'primevue/config';
+import Aura from '@primeuix/themes/aura';
 import 'primeflex/primeflex.css';
 import 'primeicons/primeicons.css'
 import { PrimeIcons } from '@primevue/core/api';
@@ -40,7 +41,14 @@ import {Button,
 
 createApp(App)
     .use(i18n)
-    .use(PrimeVue)
+    .use(PrimeVue, {
+        theme: {
+            preset: Aura,
+            options: {
+                darkModeSelector: '.my-app-dark'
+            }
+        }
+    })
     .use(ConfirmationService)
     .use(DialogService)
     .use(ToastService)
