@@ -40,7 +40,8 @@ import {
     Textarea,
     ToastService,
     Toolbar,
-    Tooltip
+    Tooltip,
+    Chart
 } from "primevue"
 
 createApp(App)
@@ -83,6 +84,7 @@ createApp(App)
     .component('pv-textarea', Textarea)
     .component('pv-toolbar', Toolbar)
     .component('pv-tooltip', Tooltip)
+    .component('pv-chart', Chart)
     .use(pinia)
     .use(router)
     .mount('#app')

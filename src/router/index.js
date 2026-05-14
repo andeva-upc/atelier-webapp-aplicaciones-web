@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { customersRoutes } from '../customers/presentation/customers-routes.js';
 import { appointmentsRoutes } from '../appointments/presentation/appointments-routes.js';
 import { inventoryRoutes } from '../inventory/presentation/inventory-routes.js';
+import { telemetryRoutes } from '../telemetry/presentation/telemetry-routes.js';
 
 /**
  * Main Application Router.
@@ -16,7 +17,8 @@ const router = createRouter({
     },
     ...customersRoutes,
     ...appointmentsRoutes,
-    ...inventoryRoutes
+    ...inventoryRoutes,
+    ...telemetryRoutes
   ]
 });
 
