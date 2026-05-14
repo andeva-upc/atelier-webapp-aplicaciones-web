@@ -37,5 +37,31 @@
       "save": "Guardar",
       "cancel": "Cancelar"
     }
+  },
+  "inventory": {
+    "title": "Inventario",
+    "registered_products": "repuestos registrados",
+    "add_product": "Agregar repuesto",
+    "low_stock_alert": "repuestos con stock bajo",
+    "search_placeholder": "Buscar por SKU, nombre, marca...",
+    "current_stock": "Stock actual",
+    "unit_price": "Precio unit.",
+    "status": {
+      "ok": "OK",
+      "low_stock": "Stock bajo"
+    },
+    "form": {
+      "title": "Nuevo Repuesto",
+      "name": "Nombre del repuesto",
+      "sku": "SKU",
+      "category": "Categoría",
+      "brand": "Marca",
+      "unit_price": "Precio unitario",
+      "unit_cost": "Costo unitario",
+      "current_stock": "Stock inicial",
+      "minimum_stock": "Stock mínimo",
+      "save": "Guardar",
+      "cancel": "Cancelar"
+    }
   }
 }
