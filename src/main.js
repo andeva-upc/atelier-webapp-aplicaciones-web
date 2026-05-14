@@ -6,18 +6,23 @@ import i18n from './i18n';
 import pinia from './pinia.js';
 import router from './router/index.js';
 import PrimeVue from 'primevue/config';
+import Aura from '@primeuix/themes/aura';
 import 'primeflex/primeflex.css';
 import 'primeicons/primeicons.css'
 import { PrimeIcons } from '@primevue/core/api';
-import {Button,
+import {
+    Avatar,
+    Button,
     Card,
     Checkbox,
+    Chip,
     Column,
     ConfirmationService,
     ConfirmDialog,
     DataTable,
     Dialog,
     DialogService,
+    Divider,
     Drawer,
     FileUpload,
     FloatLabel,
@@ -40,17 +45,27 @@ import {Button,
 
 createApp(App)
     .use(i18n)
-    .use(PrimeVue)
+    .use(PrimeVue, {
+        theme: {
+            preset: Aura,
+            options: {
+                darkModeSelector: '.my-app-dark',
+            }
+        }
+    })
     .use(ConfirmationService)
     .use(DialogService)
     .use(ToastService)
+    .component('pv-avatar', Avatar)
     .component('pv-button', Button)
     .component('pv-card', Card)
     .component('pv-checkbox', Checkbox)
+    .component('pv-chip', Chip)
     .component('pv-column', Column)
     .component('pv-confirm-dialog', ConfirmDialog)
     .component('pv-data-table', DataTable)
     .component('pv-dialog', Dialog)
+    .component('pv-divider', Divider)
     .component('pv-drawer', Drawer)
     .component('pv-file-upload', FileUpload)
     .component('pv-float-label', FloatLabel)

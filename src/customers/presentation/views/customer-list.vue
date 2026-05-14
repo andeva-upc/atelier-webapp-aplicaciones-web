@@ -58,7 +58,7 @@ const getCustomerVehicles = (index) => {
         <h1 class="m-0 view-title">{{ t('customers.title') }}</h1>
         <p class="view-subtitle mt-1">{{ t('customers.subtitle', { count: store.totalCustomers }) }}</p>
       </div>
-      <pv-button :label="t('customers.new_customer')" icon="pi pi-plus" class="new-customer-btn" @click="openNewCustomerForm" />
+      <pv-button :label="t('customers.new_customer')" icon="pi pi-plus" class="new-customer-btn flex align-items-center gap-2" @click="openNewCustomerForm" />
     </header>
 
     <CustomerForm v-model:visible="showForm" @save="handleSaveCustomer" />
@@ -87,9 +87,11 @@ const getCustomerVehicles = (index) => {
             <div class="card-main-content flex flex-column gap-4 p-4">
               <div class="flex justify-content-between align-items-start mb-3">
                 <div class="flex align-items-center gap-3">
-                  <div class="avatar-circle flex align-items-center justify-content-center">
-                    {{ getFirstInitial(customer.fullName) }}
-                  </div>
+                  <pv-avatar 
+                    :label="getFirstInitial(customer.fullName)" 
+                    class="avatar-circle flex align-items-center justify-content-center" 
+                    shape="circle" 
+                  />
                   <div>
                     <h3 class="customer-name m-0">{{ customer.fullName }}</h3>
                     <p class="services-count m-0 mt-1">{{ customer.totalServices }} {{ t('customers.services_performed') }}</p>
@@ -112,9 +114,12 @@ const getCustomerVehicles = (index) => {
               <div class="flex gap-3 align-items-start mb-3">
                 <i class="pi pi-car text-color-secondary mt-1"></i>
                 <div class="flex flex-wrap gap-2">
-                  <span v-for="vehicle in getCustomerVehicles(index)" :key="vehicle" class="vehicle-pill px-3 py-2 border-round-3xl font-semibold text-xs">
-                    {{ vehicle }}
-                  </span>
+                  <pv-chip 
+                    v-for="vehicle in getCustomerVehicles(index)" 
+                    :key="vehicle" 
+                    :label="vehicle"
+                    class="vehicle-pill px-3 py-2 border-round-3xl font-semibold text-xs" 
+                  />
                 </div>
               </div>
             </div>
@@ -219,12 +224,11 @@ const getCustomerVehicles = (index) => {
   box-shadow: 0 15px 30px -5px rgba(0, 113, 235, 0.1) !important;
 }
 
-.avatar-circle {
+:deep(.avatar-circle) {
   width: 48px;
   height: 48px;
-  background-color: #eff6ff;
-  border-radius: 50%;
-  color: #2563eb;
+  background-color: #eff6ff !important;
+  color: #2563eb !important;
   font-weight: 700;
   font-size: 1.1rem;
   font-family: 'Mona Sans', sans-serif;
@@ -255,10 +259,11 @@ const getCustomerVehicles = (index) => {
 }
 
 /* Vehicles Pills */
-.vehicle-pill {
-  background-color: #eff6ff;
-  color: #2563eb;
+:deep(.vehicle-pill) {
+  background-color: #eff6ff !important;
+  color: #2563eb !important;
   font-family: 'Arimo', sans-serif;
+  border: none !important;
 }
 
 /* Footer */
