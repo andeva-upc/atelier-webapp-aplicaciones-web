@@ -6,7 +6,7 @@ import Toolbar from "@/shared/presentation/toolbar/toolbar.vue";
 <div class="main-container">
   <Toolbar />
   <div class="main-content">
-    <!-- Page content will go here -->
+    <router-view />
   </div>
 </div>
 </template>

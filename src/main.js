@@ -4,6 +4,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import i18n from './i18n';
 import pinia from './pinia.js';
+import router from './router/index.js';
 import PrimeVue from 'primevue/config';
 import 'primeflex/primeflex.css';
 import 'primeicons/primeicons.css'
@@ -68,4 +69,5 @@ createApp(App)
     .component('pv-toolbar', Toolbar)
     .component('pv-tooltip', Tooltip)
     .use(pinia)
+    .use(router)
     .mount('#app')

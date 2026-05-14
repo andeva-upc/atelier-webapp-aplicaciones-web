@@ -33,16 +33,16 @@ const options = [
   </div>
   <div class="sidebar-divider"></div>
   <nav class="sidenav">
-    <button
-      v-for="(option, index) in options"
+    <router-link
+      v-for="option in options"
       :key="option.link"
-      :class="['sidenav-nav-item', { active: index === 0 }]"
-      type="button"
-      :aria-current="index === 0 ? 'page' : undefined"
+      :to="option.link"
+      class="sidenav-nav-item"
+      active-class="active"
     >
       <i :class="option.icon"></i>
       <span class="sidenav-nav-label">{{ t(option.label) }}</span>
-    </button>
+    </router-link>
   </nav>
 </aside>
 </template>
@@ -164,7 +164,8 @@ aside.is-expanded .logo-text {
   height: 44px;
   justify-content: center;
   overflow: visible;
-  padding: 0; /* collapsed state uses centered square buttons */
+  padding: 0;
+  text-decoration: none;
 }
 
 .sidenav-nav-item i {
