@@ -13,5 +13,9 @@
     "profile": "Profile",
     "logout": "Log out",
     "notifications": "Notifications"
+  },
+  "user": {
+    "profile": "Profile",
+    "logout": "Sign out"
   }
 }

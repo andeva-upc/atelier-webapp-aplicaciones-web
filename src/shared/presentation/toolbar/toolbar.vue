@@ -82,9 +82,6 @@ const openNotifications = () => {
 <template>
 <pv-toolbar class="tool">
   <template #start>
-    <div></div>
-  </template>
-  <template #end>
     <div class="toolbar-item language-wrapper">
       <PvButton class="language-button" text @click="toggleLanguageMenu" aria-haspopup="true" :aria-label="t('toolbar.language')">
         <i class="pi pi-globe"></i>
@@ -370,5 +367,15 @@ const openNotifications = () => {
     gap: 0.45rem;
     padding: 0.3rem 0.35rem;
   }
+}
+
+.user-button i {
+  font-size: 14px;
+  color: #999;
+  transition: transform 0.2s ease;
+}
+
+.user-button:hover i {
+  color: #0071EB;
 }
 </style>
