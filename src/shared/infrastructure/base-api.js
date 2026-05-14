@@ -1,37 +1,23 @@
+import { ErrorHandlingEnabledBaseType } from './error-handling-enabled-base-type.js';
+
 /**
- * Abstract base class for all API service implementations in the infrastructure layer.
- * Includes built-in HTTP and network error translation and normalization.
+ * Abstract base class for API service implementations.
+ *
+ * @remarks
+ * This class serves as the foundation for all infrastructure service layer APIs.
+ * In Domain-Driven Design (DDD), an infrastructure API offers access to 
+ * infrastructure services to the application layer.
+ *
+ * Subclasses should extend this class to define infrastructure-specific API operations
+ * while leveraging shared infrastructure patterns and error handling strategies.
+ *
+ * @public
  */
-export class BaseApi {
+export class BaseApi extends ErrorHandlingEnabledBaseType {
   constructor() {
+    super();
     if (this.constructor === BaseApi) {
       throw new TypeError("Cannot construct BaseApi instances directly (abstract class)");
     }
-  }
-
-  /**
-   * Normalizes and translates HTTP errors into a standardized Error.
-   * @param {string} operation - The name of the failed operation.
-   * @returns {function(Error): Promise<never>} A rejection promise with the formatted error message.
-   */
-  handleError(operation) {
-    return (error) => {
-      let errorMessage = operation;
-      if (error.response) {
-        // The server responded with a status code outside the 2xx range
-        if (error.response.status === 404) {
-          errorMessage = `${operation}: Resource not found`;
-        } else {
-          errorMessage = `${operation}: ${error.response.status} - ${error.response.data?.message || error.response.statusText || 'Unexpected error'}`;
-        }
-      } else if (error.request) {
-        // The request was made but no response was received
-        errorMessage = `${operation}: No response received from server`;
-      } else {
-        // Something went wrong while setting up the request
-        errorMessage = `${operation}: ${error.message}`;
-      }
-      return Promise.reject(new Error(errorMessage));
-    };
   }
 }
