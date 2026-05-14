@@ -17,6 +17,11 @@ export class CustomerAssembler extends BaseAssembler {
    * @returns {Customer} The domain entity.
    */
   toEntityFromResource(resource) {
+    console.log(`[CustomerAssembler] Mapping customer: ${resource.full_name || resource.id}`);
+    if (resource.appointments) {
+      console.log(`[CustomerAssembler] Found ${resource.appointments.length} appointments for ${resource.id}`);
+    }
+
     // Handling potential name splitting if only full_name is provided by the mock
     let firstName = resource.first_name || '';
     let lastName = resource.last_name || '';
@@ -25,6 +30,16 @@ export class CustomerAssembler extends BaseAssembler {
       const parts = resource.full_name.split(' ');
       firstName = parts[0] || '';
       lastName = parts.slice(1).join(' ') || '';
+    }
+
+    /** Encontrar la fecha de la última visita */
+    let lastVisitDate = 'Sin visitas registradas';
+    if (resource.appointments && resource.appointments.length > 0) {
+      const sorted = [...resource.appointments].sort(
+        (a, b) => new Date(b.appointment_date).getTime() - new Date(a.appointment_date).getTime()
+      );
+      // Tomar la fecha de la cita más reciente y formatear a YYYY-MM-DD
+      lastVisitDate = new Date(sorted[0].appointment_date).toISOString().split('T')[0];
     }
 
     return new Customer(
@@ -36,8 +51,8 @@ export class CustomerAssembler extends BaseAssembler {
       resource.email,
       resource.phone,
       resource.business_name || '',
-      resource.total_services || 0,
-      resource.last_visit || null
+      resource.total_services || (resource.work_orders ? resource.work_orders.length : 0),
+      lastVisitDate
     );
   }
 

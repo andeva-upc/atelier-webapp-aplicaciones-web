@@ -120,8 +120,8 @@ const getCustomerVehicles = (index) => {
 
           <div class="card-footer">
             <span class="last-visit-label">Last visit</span>
-            <span v-if="customer.lastVisit" class="last-visit-date">{{ formatDate(customer.lastVisit) }}</span>
-            <span v-else class="no-visits">No visits registered</span>
+            <span v-if="customer.lastVisit && customer.lastVisit !== 'Sin visitas registradas'" class="last-visit-date">{{ formatDate(customer.lastVisit) }}</span>
+            <span v-else class="no-visits">Sin visitas registradas</span>
           </div>
         </template>
       </pv-card>

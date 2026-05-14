@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia';
+import axios from 'axios';
 import { CustomersApi } from '../infrastructure/customers-api.js';
+import { environment } from '../../environments/environment.js';
 
 const customersApi = new CustomersApi();
 
@@ -38,7 +40,22 @@ export const useCustomersStore = defineStore('customers', {
       this.isLoading = true;
       this.error = null;
       try {
-        this.customers = await customersApi.getAll();
+        // Fetch customers using the API service and appointments using a direct axios call
+        const [customersResponse, appointmentsResponse] = await Promise.all([
+          customersApi.http.get(''),
+          axios.get(`${environment.apiBaseUrl}/appointments`)
+        ]);
+
+        const rawCustomers = customersResponse.data;
+        const rawAppointments = appointmentsResponse.data;
+
+        // Manually embed appointments into each customer resource by matching customer_id
+        const enrichedCustomers = rawCustomers.map(customer => ({
+          ...customer,
+          appointments: rawAppointments.filter(a => a.customer_id === customer.id)
+        }));
+
+        this.customers = enrichedCustomers.map(resource => customersApi.assembler.toEntityFromResource(resource));
       } catch (err) {
         this.error = err.message || 'Failed to fetch customers';
         console.error('[CustomersStore] fetchCustomers error:', err);
