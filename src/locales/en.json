@@ -132,5 +132,21 @@
       "save": "Save",
       "cancel": "Cancel"
     }
+  },
+  "telemetry": {
+    "vehicles_title": "Vehicles",
+    "history_title": "Telemetry History",
+    "alerts_title": "Active DTC Alerts",
+    "search_placeholder": "Search by plate...",
+    "metrics": {
+      "temperature": "Temperature",
+      "fuel": "Fuel",
+      "speed": "Speed"
+    },
+    "severity": {
+      "critical": "Critical",
+      "medium": "Medium",
+      "low": "Low"
+    }
   }
 }

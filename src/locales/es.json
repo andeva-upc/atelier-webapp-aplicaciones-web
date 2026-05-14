@@ -132,5 +132,21 @@
       "save": "Guardar",
       "cancel": "Cancelar"
     }
+  },
+  "telemetry": {
+    "vehicles_title": "Vehículos",
+    "history_title": "Historial de Telemetría",
+    "alerts_title": "Alertas DTC Activas",
+    "search_placeholder": "Buscar por placa...",
+    "metrics": {
+      "temperature": "Temperatura",
+      "fuel": "Combustible",
+      "speed": "Velocidad"
+    },
+    "severity": {
+      "critical": "Crítica",
+      "medium": "Media",
+      "low": "Baja"
+    }
   }
 }
