@@ -175,34 +175,34 @@
   },
   "dashboard": {
     "greeting": "Buenos días, {name}",
-    "summary-date": "Aqu est tu resumen de hoy — {date}",
+    "summary-date": "Aqu está tu resumen de hoy — {date}",
     "loading": "Cargando datos del dashboard...",
     "kpi": {
       "income": "Ingreso mensual",
       "vs-last-month": "+{percent}% comparado al mes anterior",
       "active-orders": "OT Activas",
       "completed-today": "{count} completadas hoy",
-      "vehicles-workshop": "Vehculos en el taller",
-      "with-telemetry": "{count} con telemetra activa",
+      "vehicles-workshop": "Vehículos en el taller",
+      "with-telemetry": "{count} con telemetría activa",
       "pending-alerts": "Alertas pendientes",
-      "critical-medium": "{critical} crticas, {medium} medias"
+      "critical-medium": "{critical} críticas, {medium} medias"
     },
     "chart": {
       "title": "Ingreso mensual",
-      "subtitle": "ltimos 5 meses"
+      "subtitle": "Últimos 5 meses"
     },
     "alerts": {
       "title": "Alertas DTC",
       "view-all": "Ver todas"
     },
     "orders": {
-      "title": "rdenes recientes",
+      "title": "Órdenes recientes",
       "view-all": "Ver todas",
       "table": {
         "ot": "OT",
         "customer": "Cliente",
-        "vehicle": "Vehculo",
-        "mechanic": "Mecnico",
+        "vehicle": "Vehículo",
+        "mechanic": "Mecánico",
         "status": "Estado",
         "amount": "Monto"
       }
