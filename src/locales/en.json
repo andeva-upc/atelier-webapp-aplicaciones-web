@@ -106,5 +106,31 @@
     "notes": {
       "empty": "No notes registered."
     }
+  },
+  "inventory": {
+    "title": "Inventory",
+    "registered_products": "registered spare parts",
+    "add_product": "Add spare part",
+    "low_stock_alert": "spare parts with low stock",
+    "search_placeholder": "Search by SKU, name, brand...",
+    "current_stock": "Current stock",
+    "unit_price": "Unit Price",
+    "status": {
+      "ok": "OK",
+      "low_stock": "Low Stock"
+    },
+    "form": {
+      "title": "New Spare Part",
+      "name": "Spare part name",
+      "sku": "SKU",
+      "category": "Category",
+      "brand": "Brand",
+      "unit_price": "Unit price",
+      "unit_cost": "Unit cost",
+      "current_stock": "Initial stock",
+      "minimum_stock": "Minimum stock",
+      "save": "Save",
+      "cancel": "Cancel"
+    }
   }
 }
