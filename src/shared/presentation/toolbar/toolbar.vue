@@ -81,7 +81,7 @@ const openNotifications = () => {
 
 <template>
 <pv-toolbar class="tool">
-  <template #start>
+  <template #end>
     <div class="toolbar-item language-wrapper">
       <PvButton class="language-button" text @click="toggleLanguageMenu" aria-haspopup="true" :aria-label="t('toolbar.language')">
         <i class="pi pi-globe"></i>
@@ -140,6 +140,12 @@ const openNotifications = () => {
   border-radius: 8px;
 }
 
+:deep(.language-wrapper:hover .p-button),
+:deep(.notifications-wrapper:hover .p-button),
+:deep(.user-wrapper:hover .p-button) {
+  background: transparent !important;
+}
+
 .language-wrapper {
   margin-right: 0.75rem;
 }
@@ -171,7 +177,7 @@ const openNotifications = () => {
 
 
 .language-button:hover {
-  background: #e9f0f8;
+  background: transparent;
 }
 
 .language-button:hover .pi,
@@ -180,15 +186,19 @@ const openNotifications = () => {
 }
 
 .user-button:hover {
-  background: #e9f0f8;
+  background: transparent;
 }
 
 .user-button:hover .pi-chevron-down {
   color: #0071eb;
 }
 
+.user-button:hover .user-name {
+  color: #000;
+}
+
 .notification-button:hover {
-  background: #e9f0f8;
+  background: transparent;
 }
 
 .notification-button:hover .pi-bell {
@@ -239,7 +249,7 @@ const openNotifications = () => {
 .user-button {
   gap: 0.75rem;
   background: transparent;
-  color: #212121;
+  color: #000;
   font-family: Arimo, sans-serif;
   font-size: 14px;
   font-weight: 500;
