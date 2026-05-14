@@ -132,5 +132,45 @@
       "save": "Guardar",
       "cancel": "Cancelar"
     }
+  },
+  "telemetry": {
+    "vehicles_title": "Vehículos",
+    "history_title": "Historial de Telemetría",
+    "alerts_title": "Alertas DTC Activas",
+    "search_placeholder": "Buscar por placa...",
+    "metrics": {
+      "temperature": "Temperatura",
+      "fuel": "Combustible",
+      "speed": "Velocidad"
+    },
+    "severity": {
+      "critical": "Crítica",
+      "medium": "Media",
+      "low": "Baja"
+    },
+    "alert_descriptions": {
+      "P0301": "Falla de encendido en cilindro 1",
+      "P0300": "Falla de encendido aleatoria/múltiple detectada",
+      "P0135": "Circuito de calefacción del sensor de O2 (Banco 1 Sensor 1)",
+      "P0442": "Fuga pequeña detectada en el sistema de emisiones evaporativas (EVAP)",
+      "P0420": "Catalizador con baja eficiencia",
+      "P0507": "Sistema de control de ralentí - RPM superiores a lo esperado",
+      "P0172": "Sistema demasiado rico (Banco 1)",
+      "P0308": "Falla de encendido detectada en el cilindro 8",
+      "C1202": "Falla en sensor de velocidad ABS - Rueda trasera derecha",
+      "P2187": "Sistema demasiado pobre en ralentí (Banco 1)",
+      "B1620": "Falla interna de la unidad de control del Airbag (ECU)",
+      "P0171": "Mezcla aire-combustible demasiado pobre (Banco 1)",
+      "P0327": "Entrada baja en el circuito del sensor de detonación 1 (Banco 1)",
+      "P0500": "Falla en el sensor de velocidad del vehículo 'A'",
+      "P0128": "Termostato del refrigerante - Temperatura por debajo del umbral",
+      "P0113": "Circuito del sensor de temperatura de aire de entrada (IAT) - Entrada alta",
+      "P0446": "Mal funcionamiento del circuito de control de ventilación del sistema EVAP",
+      "P0700": "Falla en el sistema de control de la transmisión (MIL Request)",
+      "P0121": "Rango/rendimiento del circuito del sensor de posición del acelerador/pedal 'A'",
+      "P0131": "Voltaje bajo en el circuito del sensor de O2 (Banco 1 Sensor 1)",
+      "P0401": "Flujo insuficiente detectado en el sistema de recirculación de gases de escape (EGR)",
+      "P0234": "Condición de sobrepresión del turbocompresor/supercargador"
+    }
   }
 }

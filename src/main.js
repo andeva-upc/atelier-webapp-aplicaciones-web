@@ -42,6 +42,7 @@ import {
     Toolbar,
     Tooltip
 } from "primevue"
+import Chart from "primevue/chart";
 
 createApp(App)
     .use(i18n)
@@ -83,6 +84,7 @@ createApp(App)
     .component('pv-textarea', Textarea)
     .component('pv-toolbar', Toolbar)
     .component('pv-tooltip', Tooltip)
+    .component('pv-chart', Chart)
     .use(pinia)
     .use(router)
     .mount('#app')
