@@ -53,24 +53,24 @@ const getCustomerVehicles = (index) => {
 <template>
   <div class="customer-management">
     <!-- Header Section -->
-    <header class="view-header">
+    <header class="flex justify-content-between align-items-start mb-6">
       <div class="title-container">
-        <h1 class="view-title">{{ t('customers.title') }}</h1>
-        <p class="view-subtitle">{{ t('customers.subtitle', { count: store.totalCustomers }) }}</p>
+        <h1 class="m-0 view-title">{{ t('customers.title') }}</h1>
+        <p class="view-subtitle mt-1">{{ t('customers.subtitle', { count: store.totalCustomers }) }}</p>
       </div>
-      <pv-button :label="t('customers.new_customer')" icon="pi pi-plus" class="new-customer-btn" @click="openNewCustomerForm" />
+      <pv-button :label="t('customers.new_customer')" icon="pi pi-plus" class="new-customer-btn flex align-items-center gap-2" @click="openNewCustomerForm" />
     </header>
 
     <CustomerForm v-model:visible="showForm" @save="handleSaveCustomer" />
 
     <!-- Search Bar -->
-    <div class="search-section">
-      <pv-icon-field iconPosition="left">
-        <pv-input-icon class="pi pi-search" />
+    <div class="flex w-full mb-8">
+      <pv-icon-field iconPosition="left" class="flex-grow-1">
+        <pv-input-icon class="pi pi-search text-500" />
         <pv-input-text 
           v-model="searchQuery" 
           :placeholder="t('customers.search_placeholder')" 
-          class="search-input"
+          class="w-full border-round-xl border-1 border-200 py-3 shadow-sm search-input"
         />
       </pv-icon-field>
     </div>
@@ -80,51 +80,58 @@ const getCustomerVehicles = (index) => {
       <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
     </div>
 
-    <div v-else class="customer-grid">
-      <pv-card v-for="(customer, index) in store.customers" :key="customer.id" class="customer-card">
-        <template #content>
-          <div class="card-main-content">
-            <div class="card-header">
-              <div class="header-left">
-                <div class="avatar-circle">
-                  {{ getFirstInitial(customer.fullName) }}
+    <div v-else class="grid">
+      <div v-for="(customer, index) in store.customers" :key="customer.id" class="col-12 md:col-6 lg:col-4">
+        <pv-card class="customer-card h-full">
+          <template #content>
+            <div class="card-main-content flex flex-column gap-4 p-4">
+              <div class="flex justify-content-between align-items-start mb-3">
+                <div class="flex align-items-center gap-3">
+                  <pv-avatar 
+                    :label="getFirstInitial(customer.fullName)" 
+                    class="avatar-circle flex align-items-center justify-content-center" 
+                    shape="circle" 
+                  />
+                  <div>
+                    <h3 class="customer-name m-0">{{ customer.fullName }}</h3>
+                    <p class="services-count m-0 mt-1">{{ customer.totalServices }} {{ t('customers.services_performed') }}</p>
+                  </div>
                 </div>
-                <div class="name-section">
-                  <h3 class="customer-name">{{ customer.fullName }}</h3>
-                  <p class="services-count">{{ customer.totalServices }} {{ t('customers.services_performed') }}</p>
+                <pv-button icon="pi pi-trash" text severity="secondary" class="delete-btn p-0" />
+              </div>
+
+              <div class="flex flex-column gap-2 mb-3">
+                <div class="flex align-items-center gap-2 info-item">
+                  <i class="pi pi-envelope text-color-secondary"></i>
+                  <span>{{ customer.email }}</span>
+                </div>
+                <div class="flex align-items-center gap-2 info-item">
+                  <i class="pi pi-phone text-color-secondary"></i>
+                  <span>{{ customer.phone }}</span>
                 </div>
               </div>
-              <pv-button icon="pi pi-trash" text severity="secondary" class="delete-btn" />
-            </div>
 
-            <div class="contact-info">
-              <div class="info-item">
-                <i class="pi pi-envelope"></i>
-                <span>{{ customer.email }}</span>
-              </div>
-              <div class="info-item">
-                <i class="pi pi-phone"></i>
-                <span>{{ customer.phone }}</span>
-              </div>
-            </div>
-
-            <div class="vehicles-pills">
-              <i class="pi pi-car vehicle-icon"></i>
-              <div class="pills-container">
-                <span v-for="vehicle in getCustomerVehicles(index)" :key="vehicle" class="vehicle-pill">
-                  {{ vehicle }}
-                </span>
+              <div class="flex gap-3 align-items-start mb-3">
+                <i class="pi pi-car text-color-secondary mt-1"></i>
+                <div class="flex flex-wrap gap-2">
+                  <pv-chip 
+                    v-for="vehicle in getCustomerVehicles(index)" 
+                    :key="vehicle" 
+                    :label="vehicle"
+                    class="vehicle-pill px-3 py-2 border-round-3xl font-semibold text-xs" 
+                  />
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="card-footer">
-            <span class="last-visit-label">Last visit</span>
-            <span v-if="customer.lastVisit && customer.lastVisit !== 'Sin visitas registradas'" class="last-visit-date">{{ formatDate(customer.lastVisit) }}</span>
-            <span v-else class="no-visits">Sin visitas registradas</span>
-          </div>
-        </template>
-      </pv-card>
+            <div class="card-footer px-4 py-3 flex justify-content-between align-items-center">
+              <span class="last-visit-label">Last visit</span>
+              <span v-if="customer.lastVisit && customer.lastVisit !== 'Sin visitas registradas'" class="last-visit-date">{{ formatDate(customer.lastVisit) }}</span>
+              <span v-else class="no-visits">Sin visitas registradas</span>
+            </div>
+          </template>
+        </pv-card>
+      </div>
     </div>
   </div>
 </template>
@@ -137,25 +144,16 @@ const getCustomerVehicles = (index) => {
 }
 
 /* Header */
-.view-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 2rem;
-}
-
 .view-title {
   font-family: 'Mona Sans', sans-serif;
   font-size: 2.5rem;
   font-weight: 800;
   color: #111827;
-  margin: 0;
 }
 
 .view-subtitle {
   color: #6b7280;
   font-size: 1.1rem;
-  margin-top: 0.25rem;
 }
 
 .new-customer-btn {
@@ -167,9 +165,6 @@ const getCustomerVehicles = (index) => {
   font-family: 'Arimo', sans-serif;
   font-size: 0.95rem;
   color: #ffffff !important;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   box-shadow: 0 4px 12px rgba(0, 113, 235, 0.2);
   transition: all 0.2s ease;
 }
@@ -181,79 +176,33 @@ const getCustomerVehicles = (index) => {
 }
 
 /* Search */
-.search-section {
-  display: flex;
-  width: 100%;
-  margin-bottom: 3.5rem;
-  justify-content: flex-start;
-}
-
-:deep(.p-iconfield) {
-  flex: 1;
-  display: flex;
-  max-width: 100%; /* Expanded width */
-}
-
 :deep(.p-inputtext) {
-  flex: 1;
-  width: 100%;
-  border-radius: 20px !important;
-  border: 1px solid #e2e8f0 !important;
-  padding: 1.5rem 1.5rem 1.5rem 4.5rem !important;
-  font-size: 1.1rem;
   background: #fff !important;
   color: #111827;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -1px rgba(0, 0, 0, 0.02) !important;
   transition: all 0.3s ease;
   outline: none !important;
-  appearance: none !important;
-  -webkit-appearance: none !important;
+  padding-left: 3rem !important; /* Ajuste para el icono */
 }
 
 :deep(.p-inputtext:hover) {
   border-color: #0071EB !important;
-  box-shadow: 0 0 0 3px rgba(0, 113, 235, 0.08) !important;
-}
-
-:deep(.p-inputtext::placeholder) {
-  color: #94a3b8;
-  opacity: 0.7;
 }
 
 :deep(.p-inputtext:focus) {
   border-color: #0071EB !important;
-  box-shadow: 0 0 0 4px rgba(0, 113, 235, 0.05) !important;
+  box-shadow: 0 0 0 2px rgba(0, 113, 235, 0.1) !important;
 }
 
 :deep(.p-inputicon) {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  left: 1.75rem !important;
+  left: 1rem !important;
   color: #94a3b8;
-  font-size: 1.2rem;
-  line-height: 0;
-  pointer-events: none;
-}
-
-/* Flexbox Grid */
-.customer-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  justify-content: flex-start;
 }
 
 .customer-card {
-  flex: 1 1 calc(33.333% - 2rem);
-  min-width: 320px;
-  max-width: 100%; /* More flexible max width */
   border-radius: 24px;
   border: 1px solid #f3f4f6;
   background: #fff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
@@ -264,49 +213,11 @@ const getCustomerVehicles = (index) => {
   box-shadow: 0 15px 30px -5px rgba(0, 113, 235, 0.1) !important;
 }
 
-@media (max-width: 1300px) {
-  .customer-card {
-    flex: 1 1 calc(50% - 2rem); /* 2 columns for smaller desktops/tablets */
-  }
-}
-
-@media (max-width: 768px) {
-  .customer-card {
-    flex: 1 1 100%; /* 1 column for mobile */
-    min-width: 0;
-  }
-}
-
-.card-main-content {
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  flex: 1;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1.5rem;
-}
-
-.header-left {
-  display: flex;
-  gap: 1.25rem;
-  align-items: center;
-}
-
-.avatar-circle {
+:deep(.avatar-circle) {
   width: 48px;
   height: 48px;
-  background-color: #eff6ff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #2563eb;
+  background-color: #eff6ff !important;
+  color: #2563eb !important;
   font-weight: 700;
   font-size: 1.1rem;
   font-family: 'Mona Sans', sans-serif;
@@ -317,80 +228,36 @@ const getCustomerVehicles = (index) => {
   font-size: 1.25rem;
   font-weight: 700;
   color: #111827;
-  margin: 0;
   line-height: 1.2;
 }
 
 .services-count {
   color: #6b7280;
   font-size: 0.9rem;
-  margin-top: 0.25rem;
   font-family: 'Arimo', sans-serif;
 }
 
 .delete-btn {
   color: #9ca3af !important;
-  padding: 0;
-}
-
-.contact-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
 }
 
 .info-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
   color: #6b7280;
   font-size: 0.95rem;
   font-family: 'Arimo', sans-serif;
 }
 
-.info-item i {
-  color: #d1d5db;
-  font-size: 1rem;
-}
-
 /* Vehicles Pills */
-.vehicles-pills {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
-  margin-bottom: 1.5rem;
-}
-
-.vehicle-icon {
-  color: #d1d5db;
-  font-size: 1rem;
-  margin-top: 0.5rem;
-}
-
-.pills-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.vehicle-pill {
-  background-color: #eff6ff;
-  color: #2563eb;
-  padding: 0.4rem 1rem;
-  border-radius: 9999px;
-  font-size: 0.85rem;
-  font-weight: 600;
+:deep(.vehicle-pill) {
+  background-color: #eff6ff !important;
+  color: #2563eb !important;
   font-family: 'Arimo', sans-serif;
+  border: none !important;
 }
 
 /* Footer */
 .card-footer {
-  padding: 1.25rem 1.5rem;
   border-top: 1px solid #f9fafb;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .last-visit-label {
