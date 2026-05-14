@@ -85,6 +85,34 @@ export const useCustomersStore = defineStore('customers', {
     },
 
     /**
+     * Searches for pre-registrations in the appointments collection.
+     * Follows the "Estado A" architecture logic.
+     * @param {Object} criteria - Search criteria (documentNumber or phone).
+     * @returns {Promise<Object|null>} The pre-registered appointment data if found.
+     */
+    async findPreRegistration(criteria) {
+      this.isLoading = true;
+      try {
+        const response = await axios.get(`${environment.apiBaseUrl}/appointments`, {
+          params: { status: 'PENDING_APPROVAL' }
+        });
+        
+        const appointments = response.data;
+        const found = appointments.find(a => 
+          (criteria.document && a.pre_registered_document_number === criteria.document) ||
+          (criteria.phone && a.pre_registered_phone === criteria.phone)
+        );
+        
+        return found || null;
+      } catch (err) {
+        console.error('[CustomersStore] findPreRegistration error:', err);
+        return null;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    /**
      * Registers a new customer in the system.
      * @param {import('../domain/model/customer.entity').Customer} customerEntity
      */

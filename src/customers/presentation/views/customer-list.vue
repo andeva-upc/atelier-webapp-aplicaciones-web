@@ -166,6 +166,7 @@ const getCustomerVehicles = (index) => {
   font-weight: 600;
   font-family: 'Arimo', sans-serif;
   font-size: 0.95rem;
+  color: #ffffff !important;
   display: flex;
   align-items: center;
   gap: 0.5rem;
