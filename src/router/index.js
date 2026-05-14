@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { customersRoutes } from '../customers/presentation/customers-routes.js';
+import { dashboardRoutes } from '../home/presentation/dashboard-routes.js';
 import { appointmentsRoutes } from '../appointments/presentation/appointments-routes.js';
 import { inventoryRoutes } from '../inventory/presentation/inventory-routes.js';
 import { telemetryRoutes } from '../telemetry/presentation/telemetry-routes.js';
@@ -13,8 +14,9 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/customers'
+      redirect: '/home'
     },
+    ...dashboardRoutes,
     ...customersRoutes,
     ...appointmentsRoutes,
     ...inventoryRoutes,

@@ -172,5 +172,46 @@
       "P0401": "Flujo insuficiente detectado en el sistema de recirculación de gases de escape (EGR)",
       "P0234": "Condición de sobrepresión del turbocompresor/supercargador"
     }
+  },
+  "dashboard": {
+    "greeting": "Buenos días, {name}",
+    "summary-date": "Aqu est tu resumen de hoy — {date}",
+    "loading": "Cargando datos del dashboard...",
+    "kpi": {
+      "income": "Ingreso mensual",
+      "vs-last-month": "+{percent}% comparado al mes anterior",
+      "active-orders": "OT Activas",
+      "completed-today": "{count} completadas hoy",
+      "vehicles-workshop": "Vehculos en el taller",
+      "with-telemetry": "{count} con telemetra activa",
+      "pending-alerts": "Alertas pendientes",
+      "critical-medium": "{critical} crticas, {medium} medias"
+    },
+    "chart": {
+      "title": "Ingreso mensual",
+      "subtitle": "ltimos 5 meses"
+    },
+    "alerts": {
+      "title": "Alertas DTC",
+      "view-all": "Ver todas"
+    },
+    "orders": {
+      "title": "rdenes recientes",
+      "view-all": "Ver todas",
+      "table": {
+        "ot": "OT",
+        "customer": "Cliente",
+        "vehicle": "Vehculo",
+        "mechanic": "Mecnico",
+        "status": "Estado",
+        "amount": "Monto"
+      }
+    },
+    "status": {
+      "completed": "Completada",
+      "in-progress": "En progreso",
+      "pending": "Pendiente",
+      "scheduled": "Agendada"
+    }
   }
 }
