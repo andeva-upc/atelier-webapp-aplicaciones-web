@@ -106,14 +106,14 @@ const handleSearch = async () => {
       </div>
     </template>
 
-    <div class="dialog-content">
-      <p class="description-text">
+    <div class="dialog-content p-5">
+      <p class="description-text mb-6">
         Enter the driver's credentials (by document or phone number) to verify passive matches or online appointments.
       </p>
 
-      <div class="form-row">
-        <div class="form-field doc-type">
-          <label>Document type</label>
+      <div class="flex gap-4 mb-5">
+        <div class="flex flex-column doc-type" style="flex: 0 0 160px;">
+          <label class="mb-2 font-bold text-sm text-color-secondary">Document type</label>
           <select 
             v-model="form.documentType" 
             class="native-select"
@@ -123,31 +123,31 @@ const handleSearch = async () => {
             </option>
           </select>
         </div>
-        <div class="form-field doc-number">
-          <label>Document number</label>
-          <pv-icon-field iconPosition="left">
+        <div class="flex flex-column flex-1">
+          <label class="mb-2 font-bold text-sm text-color-secondary">Document number</label>
+          <pv-icon-field iconPosition="left" class="w-full relative flex align-items-center">
             <pv-input-icon class="pi pi-id-card" />
             <pv-input-text 
               v-model="form.documentNumber" 
               placeholder="Ej. 77889900" 
-              class="custom-input"
+              class="custom-input w-full"
             />
           </pv-icon-field>
         </div>
       </div>
 
-      <div class="divider">
-        <span class="divider-text">OR ALTERNATIVELY</span>
+      <div class="divider flex align-items-center text-center my-6">
+        <span class="divider-text px-3 font-extrabold text-xs text-color-secondary uppercase tracking-widest">OR ALTERNATIVELY</span>
       </div>
 
-      <div class="form-field full-width">
-        <label>Mobile phone</label>
-        <pv-icon-field iconPosition="left">
+      <div class="flex flex-column w-full">
+        <label class="mb-2 font-bold text-sm text-color-secondary">Mobile phone</label>
+        <pv-icon-field iconPosition="left" class="w-full relative flex align-items-center">
           <pv-input-icon class="pi pi-mobile" />
           <pv-input-text 
             v-model="form.phone" 
             placeholder="Ej. 999888777" 
-            class="custom-input"
+            class="custom-input w-full"
           />
         </pv-icon-field>
       </div>
@@ -200,7 +200,7 @@ const handleSearch = async () => {
 
 .custom-registration-dialog .p-dialog-content {
   background: #ffffff !important;
-  padding: 2.5rem !important;
+  padding: 0 !important;
 }
 
 .custom-registration-dialog .p-dialog-footer {
@@ -222,38 +222,6 @@ const handleSearch = async () => {
   color: #64748b;
   font-size: 1.05rem;
   line-height: 1.6;
-  margin-bottom: 3rem;
-}
-
-.custom-registration-dialog .form-row {
-  display: flex;
-  gap: 1.5rem;
-  margin-bottom: 2.5rem;
-}
-
-.custom-registration-dialog .form-field {
-  display: flex;
-  flex-direction: column;
-}
-
-.custom-registration-dialog .form-field label {
-  font-family: 'Arimo', sans-serif;
-  font-weight: 700;
-  font-size: 0.95rem;
-  color: #334155;
-  margin-bottom: 0.75rem;
-}
-
-.custom-registration-dialog .doc-type {
-  flex: 0 0 160px;
-}
-
-.custom-registration-dialog .doc-number {
-  flex: 1;
-}
-
-.custom-registration-dialog .full-width {
-  width: 100%;
 }
 
 /* Base styles for Select and Input */
@@ -270,7 +238,7 @@ const handleSearch = async () => {
 }
 
 .custom-registration-dialog .native-select {
-  padding: 0 3rem 0 1.5rem !important; /* Extra padding on right for the arrow */
+  padding: 0 3rem 0 1.5rem !important;
   appearance: none;
   -webkit-appearance: none;
   background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E") !important;
@@ -285,14 +253,6 @@ const handleSearch = async () => {
 .custom-registration-dialog .p-inputtext:focus {
   border-color: #0071EB !important;
   box-shadow: 0 0 0 1px #0071EB !important;
-}
-
-/* Centering for Icons in IconField */
-.custom-registration-dialog .p-iconfield {
-  width: 100% !important;
-  position: relative !important;
-  display: flex !important;
-  align-items: center !important;
 }
 
 .custom-registration-dialog .p-inputicon {
@@ -310,13 +270,6 @@ const handleSearch = async () => {
   padding-left: 4rem !important;
 }
 
-.custom-registration-dialog .divider {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  margin: 3rem 0;
-}
-
 .custom-registration-dialog .divider::before,
 .custom-registration-dialog .divider::after {
   content: '';
@@ -325,12 +278,7 @@ const handleSearch = async () => {
 }
 
 .custom-registration-dialog .divider-text {
-  padding: 0 1.5rem;
   font-family: 'Arimo', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 800;
-  color: #94a3b8;
-  letter-spacing: 0.1em;
 }
 
 .custom-registration-dialog .footer-actions {
