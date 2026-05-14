@@ -9,6 +9,11 @@
     "billing": "Facturación",
     "configuration": "Configuración"
   },
+  "toolbar": {
+    "profile": "Perfil",
+    "logout": "Cerrar sesión",
+    "notifications": "Notificaciones"
+  },
   "user": {
     "profile": "Perfil",
     "logout": "Cerrar sesión"

@@ -51,10 +51,11 @@ const options = [
 aside {
   display: flex;
   flex-direction: column;
-  width: calc(2rem + 44px);
+  width: calc(2rem + 45px);
   min-height: 100vh;
   /* allow rounded buttons and shadows to be visible instead of being clipped */
-  padding: 1rem 1rem;
+  overflow: visible;
+  padding: 1.2rem 1rem;
   background-color: #fff;
   color: #212121;
   box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.3);
@@ -127,8 +128,7 @@ aside.is-expanded .logo-text {
   gap: 0.75rem;
   flex: 1;
   overflow-y: auto;
-  min-width: 44px;
-
+  padding: 0.5rem 0; /* add breathing room so the first/last buttons are not cut */
 }
 
 .sidenav::-webkit-scrollbar {
@@ -164,7 +164,7 @@ aside.is-expanded .logo-text {
   height: 44px;
   justify-content: center;
   overflow: visible;
-  padding: 0;
+  padding: 0; /* collapsed state uses centered square buttons */
 }
 
 .sidenav-nav-item i {
