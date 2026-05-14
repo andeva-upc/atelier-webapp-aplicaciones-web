@@ -37,5 +37,74 @@
       "save": "Save",
       "cancel": "Cancel"
     }
+  },
+  "appointments": {
+    "title": "Appointments",
+    "subtitle": "{count} scheduled appointments",
+    "search_placeholder": "Search customer, vehicle or mechanic...",
+    "today": "Today",
+    "empty": "No appointments found.",
+    "aria": {
+      "summary": "Appointments summary",
+      "filters": "Appointment filters",
+      "list": "Appointments list"
+    },
+    "stats": {
+      "total": "Total",
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "completed": "Completed"
+    },
+    "filters": {
+      "all": "All",
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "cancelled": "Cancelled",
+      "completed": "Completed"
+    },
+    "fields": {
+      "customer": "Customer",
+      "phone": "Phone",
+      "vehicle": "Vehicle",
+      "service": "Service",
+      "date": "Date",
+      "time": "Time",
+      "mechanic": "Assigned mechanic",
+      "status": "Status",
+      "notes": "Notes"
+    },
+    "placeholders": {
+      "customer": "Customer name",
+      "phone": "9xx xxx xxx",
+      "vehicle": "Brand Model Plate",
+      "service": "Service type",
+      "mechanic": "Mechanic name",
+      "notes": "Optional customer notes"
+    },
+    "status": {
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "in_progress": "In progress",
+      "cancelled": "Cancelled",
+      "completed": "Completed"
+    },
+    "actions": {
+      "new": "New appointment",
+      "edit": "Edit",
+      "close": "Close",
+      "cancel": "Cancel",
+      "schedule": "Schedule appointment",
+      "save_changes": "Save changes"
+    },
+    "detail": {
+      "title": "Appointment details"
+    },
+    "form": {
+      "create_title": "New appointment",
+      "edit_title": "Edit appointment"
+    },
+    "notes": {
+      "empty": "No notes registered."
+    }
   }
 }

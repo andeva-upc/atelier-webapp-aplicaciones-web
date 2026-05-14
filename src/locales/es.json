@@ -37,5 +37,74 @@
       "save": "Guardar",
       "cancel": "Cancelar"
     }
+  },
+  "appointments": {
+    "title": "Citas",
+    "subtitle": "{count} citas agendadas",
+    "search_placeholder": "Buscar cliente, vehículo o mecánico...",
+    "today": "Hoy",
+    "empty": "No se encontraron citas.",
+    "aria": {
+      "summary": "Resumen de citas",
+      "filters": "Filtros de citas",
+      "list": "Lista de citas"
+    },
+    "stats": {
+      "total": "Total",
+      "confirmed": "Confirmadas",
+      "pending": "Pendientes",
+      "completed": "Completadas"
+    },
+    "filters": {
+      "all": "Todas",
+      "confirmed": "Confirmadas",
+      "pending": "Pendientes",
+      "cancelled": "Canceladas",
+      "completed": "Completadas"
+    },
+    "fields": {
+      "customer": "Cliente",
+      "phone": "Teléfono",
+      "vehicle": "Vehículo",
+      "service": "Servicio",
+      "date": "Fecha",
+      "time": "Hora",
+      "mechanic": "Mecánico asignado",
+      "status": "Estado",
+      "notes": "Observaciones"
+    },
+    "placeholders": {
+      "customer": "Nombre del cliente",
+      "phone": "9xx xxx xxx",
+      "vehicle": "Marca Modelo Placa",
+      "service": "Tipo de servicio",
+      "mechanic": "Nombre del mecánico",
+      "notes": "Notas del cliente opcional"
+    },
+    "status": {
+      "confirmed": "Confirmada",
+      "pending": "Pendiente",
+      "in_progress": "En progreso",
+      "cancelled": "Cancelada",
+      "completed": "Completada"
+    },
+    "actions": {
+      "new": "Nueva cita",
+      "edit": "Editar",
+      "close": "Cerrar",
+      "cancel": "Cancelar",
+      "schedule": "Agendar cita",
+      "save_changes": "Guardar cambios"
+    },
+    "detail": {
+      "title": "Detalle de cita"
+    },
+    "form": {
+      "create_title": "Nueva cita",
+      "edit_title": "Editar cita"
+    },
+    "notes": {
+      "empty": "Sin observaciones registradas."
+    }
   }
 }
