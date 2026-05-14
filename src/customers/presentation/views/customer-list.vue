@@ -65,12 +65,12 @@ const getCustomerVehicles = (index) => {
 
     <!-- Search Bar -->
     <div class="flex w-full mb-8">
-      <pv-icon-field iconPosition="left" class="flex-1">
-        <pv-input-icon class="pi pi-search" />
+      <pv-icon-field iconPosition="left" class="flex-grow-1">
+        <pv-input-icon class="pi pi-search text-500" />
         <pv-input-text 
           v-model="searchQuery" 
           :placeholder="t('customers.search_placeholder')" 
-          class="w-full search-input"
+          class="w-full border-round-xl border-1 border-200 py-3 shadow-sm search-input"
         />
       </pv-icon-field>
     </div>
@@ -177,36 +177,25 @@ const getCustomerVehicles = (index) => {
 
 /* Search */
 :deep(.p-inputtext) {
-  border-radius: 20px !important;
-  border: 1px solid #e2e8f0 !important;
-  padding: 1.5rem 1.5rem 1.5rem 4.5rem !important;
-  font-size: 1.1rem;
   background: #fff !important;
   color: #111827;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -1px rgba(0, 0, 0, 0.02) !important;
   transition: all 0.3s ease;
   outline: none !important;
+  padding-left: 3rem !important; /* Ajuste para el icono */
 }
 
 :deep(.p-inputtext:hover) {
   border-color: #0071EB !important;
-  box-shadow: 0 0 0 3px rgba(0, 113, 235, 0.08) !important;
-}
-
-:deep(.p-inputtext::placeholder) {
-  color: #94a3b8;
-  opacity: 0.7;
 }
 
 :deep(.p-inputtext:focus) {
   border-color: #0071EB !important;
-  box-shadow: 0 0 0 4px rgba(0, 113, 235, 0.05) !important;
+  box-shadow: 0 0 0 2px rgba(0, 113, 235, 0.1) !important;
 }
 
 :deep(.p-inputicon) {
-  left: 1.75rem !important;
+  left: 1rem !important;
   color: #94a3b8;
-  font-size: 1.2rem;
 }
 
 .customer-card {
