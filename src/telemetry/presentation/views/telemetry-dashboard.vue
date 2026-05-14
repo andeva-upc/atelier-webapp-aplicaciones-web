@@ -229,7 +229,7 @@ const getSeverityClass = (severity) => {
                     <span class="font-800 text-lg">{{ alert.code }}</span>
                     <pv-tag :value="t('telemetry.severity.' + alert.severity.toLowerCase())" :severity="alert.severity === 'CRITICAL' ? 'danger' : (alert.severity === 'MEDIUM' ? 'warn' : 'info')" rounded />
                   </div>
-                  <h4 class="m-0 text-xl font-800 mb-1">{{ alert.description }}</h4>
+                  <h4 class="m-0 text-xl font-800 mb-1">{{ t('telemetry.alert_descriptions.' + alert.code, alert.description) }}</h4>
                   <p class="m-0 text-sm text-500">
                     {{ store.selectedVehicle?.brand }} {{ store.selectedVehicle?.model }} {{ store.selectedVehicle?.plate_number }} • 5/14/26, 4:34 PM
                   </p>
