@@ -40,9 +40,9 @@ import {
     Textarea,
     ToastService,
     Toolbar,
-    Tooltip,
-    Chart
+    Tooltip
 } from "primevue"
+import Chart from "primevue/chart";
 
 createApp(App)
     .use(i18n)
