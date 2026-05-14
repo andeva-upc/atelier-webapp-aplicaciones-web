@@ -17,5 +17,25 @@
   "user": {
     "profile": "Profile",
     "logout": "Sign out"
+  },
+  "customers": {
+    "title": "Customers",
+    "subtitle": "{count} registered customers",
+    "search_placeholder": "Search by name, email or phone...",
+    "new_customer": "New customer",
+    "services_performed": "services performed",
+    "last_visit": "Last visit",
+    "form": {
+      "title": "New Customer",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "document_type": "Document Type",
+      "document_number": "Document Number",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "business_name": "Business Name (optional)",
+      "save": "Save",
+      "cancel": "Cancel"
+    }
   }
 }

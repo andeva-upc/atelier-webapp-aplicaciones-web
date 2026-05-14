@@ -17,5 +17,25 @@
   "user": {
     "profile": "Perfil",
     "logout": "Cerrar sesión"
+  },
+  "customers": {
+    "title": "Clientes",
+    "subtitle": "{count} clientes registrados",
+    "search_placeholder": "Buscar por nombre, email o teléfono...",
+    "new_customer": "Nuevo cliente",
+    "services_performed": "servicios realizados",
+    "last_visit": "Última visita",
+    "form": {
+      "title": "Nuevo Cliente",
+      "first_name": "Nombres",
+      "last_name": "Apellidos",
+      "document_type": "Tipo de documento",
+      "document_number": "Nro. de documento",
+      "email": "Correo electrónico",
+      "phone": "Teléfono",
+      "business_name": "Razón Social (opcional)",
+      "save": "Guardar",
+      "cancel": "Cancelar"
+    }
   }
 }
