@@ -213,5 +213,77 @@
       "pending": "Pending",
       "scheduled": "Scheduled"
     }
+  },
+  "billing": {
+    "title": "Billing",
+    "subtitle": "Commercial and financial management of the workshop",
+    "new_quote": "New quote",
+    "cards": {
+      "total_income": "Total income",
+      "total_expenses": "Total expenses",
+      "approved_quotes": "Approved quotes",
+      "pending_quotes": "Pending quotes"
+    },
+    "tabs": {
+      "income_expenses": "Income & Expenses",
+      "quotes": "Quotes"
+    },
+    "chart": {
+      "title": "Monthly Financial Summary",
+      "export": "Export Excel",
+      "legend": {
+        "income": "Income",
+        "expenses": "Expenses"
+      }
+    },
+    "table": {
+      "title": "Monthly Detail",
+      "columns": {
+        "month": "Month",
+        "income": "Income",
+        "expenses": "Expenses",
+        "profit": "Profitability",
+        "variation": "Variation"
+      }
+    },
+    "quotes_table": {
+      "columns": {
+        "id": "#Quote",
+        "client": "Client",
+        "vehicle": "Vehicle",
+        "items": "Items",
+        "total": "Total",
+        "status": "Status",
+        "date": "Date",
+        "actions": "Actions"
+      }
+    },
+    "status": {
+      "approved": "Approved",
+      "pending": "Pending",
+      "sent": "Sent",
+      "draft": "Draft"
+    },
+    "quote_form": {
+      "title": "New Quote",
+      "customer_placeholder": "Customer Name*",
+      "vehicle_placeholder": "Vehicle (Plate / Model)",
+      "items_title": "QUOTE ITEMS",
+      "inventory_label": "Inventory",
+      "item_name_placeholder": "Items*",
+      "quantity_label": "Qty.*",
+      "price_label": "S/.*",
+      "add_item": "Add item",
+      "discount_label": "Discount (S/)",
+      "subtotal": "Subtotal",
+      "igv": "Tax (18%)",
+      "total": "Total",
+      "cancel": "Cancel",
+      "submit": "New Quote",
+      "service": "Service",
+      "product": "Product",
+      "select_product": "Select product",
+      "no_stock_warning": "WARNING: OUT OF STOCK"
+    }
   }
 }
