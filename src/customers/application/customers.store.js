@@ -87,12 +87,14 @@ export const useCustomersStore = defineStore('customers', {
     /**
      * Searches for pre-registrations in the appointments collection.
      * Follows the "Estado A" architecture logic.
-     * @param {Object} criteria - Search criteria (documentNumber or phone).
+     * @param {Object} criteria - Search criteria (document or phone).
      * @returns {Promise<Object|null>} The pre-registered appointment data if found.
      */
     async findPreRegistration(criteria) {
       this.isLoading = true;
       try {
+        console.log('[CustomersStore] Searching pre-registration with criteria:', criteria);
+        // Using the remote API base URL from environment
         const response = await axios.get(`${environment.apiBaseUrl}/appointments`, {
           params: { status: 'PENDING_APPROVAL' }
         });
@@ -102,6 +104,12 @@ export const useCustomersStore = defineStore('customers', {
           (criteria.document && a.pre_registered_document_number === criteria.document) ||
           (criteria.phone && a.pre_registered_phone === criteria.phone)
         );
+        
+        if (found) {
+          console.log('[CustomersStore] Pre-registration found:', found.id);
+        } else {
+          console.log('[CustomersStore] No pre-registration found for criteria');
+        }
         
         return found || null;
       } catch (err) {
@@ -121,10 +129,34 @@ export const useCustomersStore = defineStore('customers', {
       this.error = null;
       try {
         const newCustomer = await customersApi.create(customerEntity);
+        // If successful, update the local list
         this.customers.push(newCustomer);
         return newCustomer;
       } catch (err) {
         this.error = err.message || 'Failed to create customer';
+        console.error('[CustomersStore] addCustomer error:', err);
+        throw err;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    /**
+     * Deletes a customer by ID.
+     * @param {string|number} id
+     */
+    async deleteCustomer(id) {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        await customersApi.delete(id);
+        this.customers = this.customers.filter(c => c.id !== id);
+        if (this.selectedCustomer?.id === id) {
+          this.selectedCustomer = null;
+        }
+      } catch (err) {
+        this.error = err.message || 'Failed to delete customer';
+        console.error('[CustomersStore] deleteCustomer error:', err);
         throw err;
       } finally {
         this.isLoading = false;

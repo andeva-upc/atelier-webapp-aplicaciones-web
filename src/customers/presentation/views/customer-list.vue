@@ -2,10 +2,14 @@
 import { onMounted, ref, watch } from 'vue';
 import { useCustomersStore } from '../../application/customers.store.js';
 import { useI18n } from 'vue-i18n';
+import { useConfirm } from 'primevue/useconfirm';
+import { useToast } from 'primevue/usetoast';
 import CustomerForm from './customer-form.vue';
 
 const store = useCustomersStore();
 const { t } = useI18n();
+const confirm = useConfirm();
+const toast = useToast();
 
 const searchQuery = ref('');
 const showForm = ref(false);
@@ -15,7 +19,38 @@ const openNewCustomerForm = () => {
 };
 
 const handleSaveCustomer = async (newCustomer) => {
-  await store.addCustomer(newCustomer);
+  try {
+    await store.addCustomer(newCustomer);
+    toast.add({ severity: 'success', summary: 'Success', detail: 'Customer registered successfully', life: 3000 });
+  } catch (error) {
+    toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to register customer', life: 3000 });
+  }
+};
+
+const confirmDeleteCustomer = (customer) => {
+  confirm.require({
+    message: `Are you sure you want to delete ${customer.fullName}?`,
+    header: 'Delete Confirmation',
+    icon: 'pi pi-info-circle',
+    rejectLabel: 'Cancel',
+    rejectProps: {
+      label: 'Cancel',
+      severity: 'secondary',
+      outlined: true
+    },
+    acceptProps: {
+      label: 'Delete',
+      severity: 'danger'
+    },
+    accept: async () => {
+      try {
+        await store.deleteCustomer(customer.id);
+        toast.add({ severity: 'success', summary: 'Confirmed', detail: 'Customer deleted successfully', life: 3000 });
+      } catch (error) {
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to delete customer', life: 3000 });
+      }
+    }
+  });
 };
 
 onMounted(() => {
@@ -52,6 +87,9 @@ const getCustomerVehicles = (index) => {
 
 <template>
   <div class="customer-management">
+    <pv-toast />
+    <pv-confirm-dialog></pv-confirm-dialog>
+
     <!-- Header Section -->
     <header class="flex justify-content-between align-items-start mb-6">
       <div class="title-container">
@@ -97,7 +135,7 @@ const getCustomerVehicles = (index) => {
                     <p class="services-count m-0 mt-1">{{ customer.totalServices }} {{ t('customers.services_performed') }}</p>
                   </div>
                 </div>
-                <pv-button icon="pi pi-trash" text severity="secondary" class="delete-btn p-0" />
+                <pv-button icon="pi pi-trash" text severity="danger" class="delete-btn p-0" @click="confirmDeleteCustomer(customer)" />
               </div>
 
               <div class="flex flex-column gap-2 mb-3">
