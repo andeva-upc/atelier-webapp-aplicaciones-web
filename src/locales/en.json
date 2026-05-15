@@ -1,0 +1,289 @@
+{
+  "option": {
+    "home": "Home",
+    "work-orders": "Work Orders",
+    "inventory": "Inventory",
+    "customers": "Customers",
+    "appointments": "Appointments",
+    "telemetry": "Telemetry",
+    "billing": "Billing",
+    "configuration": "Configuration"
+  },
+  "toolbar": {
+    "profile": "Profile",
+    "logout": "Log out",
+    "notifications": "Notifications"
+  },
+  "user": {
+    "profile": "Profile",
+    "logout": "Sign out"
+  },
+  "customers": {
+    "title": "Customers",
+    "subtitle": "{count} registered customers",
+    "search_placeholder": "Search by name, email or phone...",
+    "new_customer": "New customer",
+    "services_performed": "services performed",
+    "last_visit": "Last visit",
+    "form": {
+      "title": "New Customer",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "document_type": "Document Type",
+      "document_number": "Document Number",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "business_name": "Business Name (optional)",
+      "save": "Save",
+      "cancel": "Cancel"
+    }
+  },
+  "appointments": {
+    "title": "Appointments",
+    "subtitle": "{count} scheduled appointments",
+    "search_placeholder": "Search customer, vehicle or mechanic...",
+    "today": "Today",
+    "empty": "No appointments found.",
+    "aria": {
+      "summary": "Appointments summary",
+      "filters": "Appointment filters",
+      "list": "Appointments list"
+    },
+    "stats": {
+      "total": "Total",
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "completed": "Completed"
+    },
+    "filters": {
+      "all": "All",
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "cancelled": "Cancelled",
+      "completed": "Completed"
+    },
+    "fields": {
+      "customer": "Customer",
+      "phone": "Phone",
+      "vehicle": "Vehicle",
+      "service": "Service",
+      "date": "Date",
+      "time": "Time",
+      "mechanic": "Assigned mechanic",
+      "status": "Status",
+      "notes": "Notes"
+    },
+    "placeholders": {
+      "customer": "Customer name",
+      "phone": "9xx xxx xxx",
+      "vehicle": "Brand Model Plate",
+      "service": "Service type",
+      "mechanic": "Mechanic name",
+      "notes": "Optional customer notes"
+    },
+    "status": {
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "in_progress": "In progress",
+      "cancelled": "Cancelled",
+      "completed": "Completed"
+    },
+    "actions": {
+      "new": "New appointment",
+      "edit": "Edit",
+      "close": "Close",
+      "cancel": "Cancel",
+      "schedule": "Schedule appointment",
+      "save_changes": "Save changes"
+    },
+    "detail": {
+      "title": "Appointment details"
+    },
+    "form": {
+      "create_title": "New appointment",
+      "edit_title": "Edit appointment"
+    },
+    "notes": {
+      "empty": "No notes registered."
+    }
+  },
+  "inventory": {
+    "title": "Inventory",
+    "registered_products": "registered spare parts",
+    "add_product": "Add spare part",
+    "low_stock_alert": "spare parts with low stock",
+    "search_placeholder": "Search by SKU, name, brand...",
+    "current_stock": "Current stock",
+    "unit_price": "Unit Price",
+    "status": {
+      "ok": "OK",
+      "low_stock": "Low Stock"
+    },
+    "form": {
+      "title": "New Spare Part",
+      "name": "Spare part name",
+      "sku": "SKU",
+      "category": "Category",
+      "brand": "Brand",
+      "unit_price": "Unit price",
+      "unit_cost": "Unit cost",
+      "current_stock": "Initial stock",
+      "minimum_stock": "Minimum stock",
+      "save": "Save",
+      "cancel": "Cancel"
+    }
+  },
+  "telemetry": {
+    "vehicles_title": "Vehicles",
+    "history_title": "Telemetry History",
+    "alerts_title": "Active DTC Alerts",
+    "search_placeholder": "Search by plate...",
+    "metrics": {
+      "temperature": "Temperature",
+      "fuel": "Fuel",
+      "speed": "Speed"
+    },
+    "severity": {
+      "critical": "Critical",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "alert_descriptions": {
+      "P0301": "Cylinder 1 Misfire Detected",
+      "P0300": "Random/Multiple Cylinder Misfire Detected",
+      "P0135": "O2 Sensor Heater Circuit (Bank 1 Sensor 1)",
+      "P0442": "Evaporative Emission System Leak Detected (small leak)",
+      "P0420": "Catalyst System Efficiency Below Threshold (Bank 1)",
+      "P0507": "Idle Control System RPM Higher Than Expected",
+      "P0172": "System Too Rich (Bank 1)",
+      "P0308": "Cylinder 8 Misfire Detected",
+      "C1202": "ABS Wheel Speed Sensor Fault - Rear Right",
+      "P2187": "System Too Lean at Idle (Bank 1)",
+      "B1620": "Internal Airbag Control Unit (ECU) Fault",
+      "P0171": "System Too Lean (Bank 1)",
+      "P0327": "Knock Sensor 1 Circuit Low Input (Bank 1 or Single Sensor)",
+      "P0500": "Vehicle Speed Sensor 'A' Malfunction",
+      "P0128": "Coolant Thermostat (Coolant Temperature Below Threshold)",
+      "P0113": "Intake Air Temperature Sensor 1 Circuit High",
+      "P0446": "Evaporative Emission System Vent Control Circuit Malfunction",
+      "P0700": "Transmission Control System Malfunction (MIL Request)",
+      "P0121": "Throttle/Pedal Position Sensor/Switch 'A' Circuit Range/Performance",
+      "P0131": "O2 Sensor Circuit Low Voltage (Bank 1 Sensor 1)",
+      "P0401": "Exhaust Gas Recirculation (EGR) Flow Insufficient Detected",
+      "P0234": "Turbocharger/Supercharger Overboost Condition"
+    }
+  },
+  "dashboard": {
+    "greeting": "Good morning, {name}",
+    "summary-date": "Here is today's summary — {date}",
+    "loading": "Loading dashboard data...",
+    "kpi": {
+      "income": "Monthly income",
+      "vs-last-month": "+{percent}% vs last month",
+      "active-orders": "Active WOs",
+      "completed-today": "{count} completed today",
+      "vehicles-workshop": "Vehicles in workshop",
+      "with-telemetry": "{count} with active telemetry",
+      "pending-alerts": "Pending alerts",
+      "critical-medium": "{critical} critical, {medium} medium"
+    },
+    "chart": {
+      "title": "Monthly income",
+      "subtitle": "Last 5 months"
+    },
+    "alerts": {
+      "title": "DTC Alerts",
+      "view-all": "View all"
+    },
+    "orders": {
+      "title": "Recent orders",
+      "view-all": "View all",
+      "table": {
+        "ot": "WO",
+        "customer": "Customer",
+        "vehicle": "Vehicle",
+        "mechanic": "Mechanic",
+        "status": "Status",
+        "amount": "Amount"
+      }
+    },
+    "status": {
+      "completed": "Completed",
+      "in-progress": "In progress",
+      "pending": "Pending",
+      "scheduled": "Scheduled"
+    }
+  },
+  "billing": {
+    "title": "Billing",
+    "subtitle": "Commercial and financial management of the workshop",
+    "new_quote": "New quote",
+    "cards": {
+      "total_income": "Total income",
+      "total_expenses": "Total expenses",
+      "approved_quotes": "Approved quotes",
+      "pending_quotes": "Pending quotes"
+    },
+    "tabs": {
+      "income_expenses": "Income & Expenses",
+      "quotes": "Quotes"
+    },
+    "chart": {
+      "title": "Monthly Financial Summary",
+      "export": "Export Excel",
+      "legend": {
+        "income": "Income",
+        "expenses": "Expenses"
+      }
+    },
+    "table": {
+      "title": "Monthly Detail",
+      "columns": {
+        "month": "Month",
+        "income": "Income",
+        "expenses": "Expenses",
+        "profit": "Profitability",
+        "variation": "Variation"
+      }
+    },
+    "quotes_table": {
+      "columns": {
+        "id": "#Quote",
+        "client": "Client",
+        "vehicle": "Vehicle",
+        "items": "Items",
+        "total": "Total",
+        "status": "Status",
+        "date": "Date",
+        "actions": "Actions"
+      }
+    },
+    "status": {
+      "approved": "Approved",
+      "pending": "Pending",
+      "sent": "Sent",
+      "draft": "Draft"
+    },
+    "quote_form": {
+      "title": "New Quote",
+      "customer_placeholder": "Customer Name*",
+      "vehicle_placeholder": "Vehicle (Plate / Model)",
+      "items_title": "QUOTE ITEMS",
+      "inventory_label": "Inventory",
+      "item_name_placeholder": "Items*",
+      "quantity_label": "Qty.*",
+      "price_label": "S/.*",
+      "add_item": "Add item",
+      "discount_label": "Discount (S/)",
+      "subtotal": "Subtotal",
+      "igv": "Tax (18%)",
+      "total": "Total",
+      "cancel": "Cancel",
+      "submit": "New Quote",
+      "service": "Service",
+      "product": "Product",
+      "select_product": "Select product",
+      "no_stock_warning": "WARNING: OUT OF STOCK"
+    }
+  }
+}

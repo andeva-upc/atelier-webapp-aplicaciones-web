@@ -1,0 +1,289 @@
+{
+  "option": {
+    "home": "Inicio",
+    "work-orders": "Órdenes de Trabajo",
+    "inventory": "Inventario",
+    "customers": "Clientes",
+    "appointments": "Citas",
+    "telemetry": "Telemetría",
+    "billing": "Facturación",
+    "configuration": "Configuración"
+  },
+  "toolbar": {
+    "profile": "Perfil",
+    "logout": "Cerrar sesión",
+    "notifications": "Notificaciones"
+  },
+  "user": {
+    "profile": "Perfil",
+    "logout": "Cerrar sesión"
+  },
+  "customers": {
+    "title": "Clientes",
+    "subtitle": "{count} clientes registrados",
+    "search_placeholder": "Buscar por nombre, email o teléfono...",
+    "new_customer": "Nuevo cliente",
+    "services_performed": "servicios realizados",
+    "last_visit": "Última visita",
+    "form": {
+      "title": "Nuevo Cliente",
+      "first_name": "Nombres",
+      "last_name": "Apellidos",
+      "document_type": "Tipo de documento",
+      "document_number": "Nro. de documento",
+      "email": "Correo electrónico",
+      "phone": "Teléfono",
+      "business_name": "Razón Social (opcional)",
+      "save": "Guardar",
+      "cancel": "Cancelar"
+    }
+  },
+  "appointments": {
+    "title": "Citas",
+    "subtitle": "{count} citas agendadas",
+    "search_placeholder": "Buscar cliente, vehículo o mecánico...",
+    "today": "Hoy",
+    "empty": "No se encontraron citas.",
+    "aria": {
+      "summary": "Resumen de citas",
+      "filters": "Filtros de citas",
+      "list": "Lista de citas"
+    },
+    "stats": {
+      "total": "Total",
+      "confirmed": "Confirmadas",
+      "pending": "Pendientes",
+      "completed": "Completadas"
+    },
+    "filters": {
+      "all": "Todas",
+      "confirmed": "Confirmadas",
+      "pending": "Pendientes",
+      "cancelled": "Canceladas",
+      "completed": "Completadas"
+    },
+    "fields": {
+      "customer": "Cliente",
+      "phone": "Teléfono",
+      "vehicle": "Vehículo",
+      "service": "Servicio",
+      "date": "Fecha",
+      "time": "Hora",
+      "mechanic": "Mecánico asignado",
+      "status": "Estado",
+      "notes": "Observaciones"
+    },
+    "placeholders": {
+      "customer": "Nombre del cliente",
+      "phone": "9xx xxx xxx",
+      "vehicle": "Marca Modelo Placa",
+      "service": "Tipo de servicio",
+      "mechanic": "Nombre del mecánico",
+      "notes": "Notas del cliente opcional"
+    },
+    "status": {
+      "confirmed": "Confirmada",
+      "pending": "Pendiente",
+      "in_progress": "En progreso",
+      "cancelled": "Cancelada",
+      "completed": "Completada"
+    },
+    "actions": {
+      "new": "Nueva cita",
+      "edit": "Editar",
+      "close": "Cerrar",
+      "cancel": "Cancelar",
+      "schedule": "Agendar cita",
+      "save_changes": "Guardar cambios"
+    },
+    "detail": {
+      "title": "Detalle de cita"
+    },
+    "form": {
+      "create_title": "Nueva cita",
+      "edit_title": "Editar cita"
+    },
+    "notes": {
+      "empty": "Sin observaciones registradas."
+    }
+  },
+  "inventory": {
+    "title": "Inventario",
+    "registered_products": "repuestos registrados",
+    "add_product": "Agregar repuesto",
+    "low_stock_alert": "repuestos con stock bajo",
+    "search_placeholder": "Buscar por SKU, nombre, marca...",
+    "current_stock": "Stock actual",
+    "unit_price": "Precio unit.",
+    "status": {
+      "ok": "OK",
+      "low_stock": "Stock bajo"
+    },
+    "form": {
+      "title": "Nuevo Repuesto",
+      "name": "Nombre del repuesto",
+      "sku": "SKU",
+      "category": "Categoría",
+      "brand": "Marca",
+      "unit_price": "Precio unitario",
+      "unit_cost": "Costo unitario",
+      "current_stock": "Stock inicial",
+      "minimum_stock": "Stock mínimo",
+      "save": "Guardar",
+      "cancel": "Cancelar"
+    }
+  },
+  "telemetry": {
+    "vehicles_title": "Vehículos",
+    "history_title": "Historial de Telemetría",
+    "alerts_title": "Alertas DTC Activas",
+    "search_placeholder": "Buscar por placa...",
+    "metrics": {
+      "temperature": "Temperatura",
+      "fuel": "Combustible",
+      "speed": "Velocidad"
+    },
+    "severity": {
+      "critical": "Crítica",
+      "medium": "Media",
+      "low": "Baja"
+    },
+    "alert_descriptions": {
+      "P0301": "Falla de encendido en cilindro 1",
+      "P0300": "Falla de encendido aleatoria/múltiple detectada",
+      "P0135": "Circuito de calefacción del sensor de O2 (Banco 1 Sensor 1)",
+      "P0442": "Fuga pequeña detectada en el sistema de emisiones evaporativas (EVAP)",
+      "P0420": "Catalizador con baja eficiencia",
+      "P0507": "Sistema de control de ralentí - RPM superiores a lo esperado",
+      "P0172": "Sistema demasiado rico (Banco 1)",
+      "P0308": "Falla de encendido detectada en el cilindro 8",
+      "C1202": "Falla en sensor de velocidad ABS - Rueda trasera derecha",
+      "P2187": "Sistema demasiado pobre en ralentí (Banco 1)",
+      "B1620": "Falla interna de la unidad de control del Airbag (ECU)",
+      "P0171": "Mezcla aire-combustible demasiado pobre (Banco 1)",
+      "P0327": "Entrada baja en el circuito del sensor de detonación 1 (Banco 1)",
+      "P0500": "Falla en el sensor de velocidad del vehículo 'A'",
+      "P0128": "Termostato del refrigerante - Temperatura por debajo del umbral",
+      "P0113": "Circuito del sensor de temperatura de aire de entrada (IAT) - Entrada alta",
+      "P0446": "Mal funcionamiento del circuito de control de ventilación del sistema EVAP",
+      "P0700": "Falla en el sistema de control de la transmisión (MIL Request)",
+      "P0121": "Rango/rendimiento del circuito del sensor de posición del acelerador/pedal 'A'",
+      "P0131": "Voltaje bajo en el circuito del sensor de O2 (Banco 1 Sensor 1)",
+      "P0401": "Flujo insuficiente detectado en el sistema de recirculación de gases de escape (EGR)",
+      "P0234": "Condición de sobrepresión del turbocompresor/supercargador"
+    }
+  },
+  "dashboard": {
+    "greeting": "Buenos días, {name}",
+    "summary-date": "Aqu está tu resumen de hoy — {date}",
+    "loading": "Cargando datos del dashboard...",
+    "kpi": {
+      "income": "Ingreso mensual",
+      "vs-last-month": "+{percent}% comparado al mes anterior",
+      "active-orders": "OT Activas",
+      "completed-today": "{count} completadas hoy",
+      "vehicles-workshop": "Vehículos en el taller",
+      "with-telemetry": "{count} con telemetría activa",
+      "pending-alerts": "Alertas pendientes",
+      "critical-medium": "{critical} críticas, {medium} medias"
+    },
+    "chart": {
+      "title": "Ingreso mensual",
+      "subtitle": "Últimos 5 meses"
+    },
+    "alerts": {
+      "title": "Alertas DTC",
+      "view-all": "Ver todas"
+    },
+    "orders": {
+      "title": "Órdenes recientes",
+      "view-all": "Ver todas",
+      "table": {
+        "ot": "OT",
+        "customer": "Cliente",
+        "vehicle": "Vehículo",
+        "mechanic": "Mecánico",
+        "status": "Estado",
+        "amount": "Monto"
+      }
+    },
+    "status": {
+      "completed": "Completada",
+      "in-progress": "En progreso",
+      "pending": "Pendiente",
+      "scheduled": "Agendada"
+    }
+  },
+  "billing": {
+    "title": "Facturación",
+    "subtitle": "Gestión comercial y financiera del taller",
+    "new_quote": "Nueva cotización",
+    "cards": {
+      "total_income": "Ingresos totales",
+      "total_expenses": "Gastos totales",
+      "approved_quotes": "Cotizaciones aprobadas",
+      "pending_quotes": "Cotizaciones pendientes"
+    },
+    "tabs": {
+      "income_expenses": "Ingresos y gastos",
+      "quotes": "Cotizaciones"
+    },
+    "chart": {
+      "title": "Resumen financiero mensual",
+      "export": "Exportar Excel",
+      "legend": {
+        "income": "Ingresos",
+        "expenses": "Gastos"
+      }
+    },
+    "table": {
+      "title": "Detalle por mes",
+      "columns": {
+        "month": "Mes",
+        "income": "Ingresos",
+        "expenses": "Gastos",
+        "profit": "Rentabilidad",
+        "variation": "Variación"
+      }
+    },
+    "quotes_table": {
+      "columns": {
+        "id": "Nº de Cotización",
+        "client": "Cliente",
+        "vehicle": "Vehículo",
+        "items": "Ítems",
+        "total": "Total",
+        "status": "Estado",
+        "date": "Fecha de emisión",
+        "actions": "Acciones"
+      }
+    },
+    "status": {
+      "approved": "Aprobada",
+      "pending": "Pendiente",
+      "sent": "Enviada",
+      "draft": "Borrador"
+    },
+    "quote_form": {
+      "title": "Nueva cotización",
+      "customer_placeholder": "Nombre del Cliente*",
+      "vehicle_placeholder": "Vehículo (Placa / Modelo)",
+      "items_title": "ÍTEMS DE LA COTIZACIÓN",
+      "inventory_label": "Inventario",
+      "item_name_placeholder": "Ítems*",
+      "quantity_label": "Cant.*",
+      "price_label": "S/.*",
+      "add_item": "Agregar ítem",
+      "discount_label": "Descuento (S/)",
+      "subtotal": "Subtotal",
+      "igv": "IGV (18%)",
+      "total": "Total",
+      "cancel": "Cancelar",
+      "submit": "Nueva cotización",
+      "service": "Servicio",
+      "product": "Producto",
+      "select_product": "Seleccionar producto",
+      "no_stock_warning": "ADVERTENCIA: SIN STOCK"
+    }
+  }
+}

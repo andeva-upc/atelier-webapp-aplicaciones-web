@@ -1,0 +1,535 @@
+@startuml DiagramaClases
+
+skinparam classAttributeIconSize 0
+skinparam monochrome false
+skinparam shadowing false
+skinparam linetype ortho
+skinparam class {
+    BackgroundColor White
+    BorderColor Black
+    ArrowColor Black
+}
+
+' ══════════════════════════════════════════════
+' CONTEXT 0: CORE (Seguridad y Multimedia)
+' ══════════════════════════════════════════════
+
+package "Context 0: Core (Seguridad y Multimedia)" {
+
+    class BaseEntity {
+        - id : Guid
+        - createdAt : DateTime
+        - updatedAt : DateTime
+        - deletedAt : DateTime
+    }
+
+    enum SubscriptionPlan {
+        FREE
+        PRO
+        ENTERPRISE
+    }
+
+    class Role {
+        - name : string
+        - description : string
+    }
+
+    class Workshop {
+        - taxId : string
+        - businessName : string
+        - tradeName : string
+        - subscriptionPlan : SubscriptionPlan
+        - isActive : bool
+    }
+
+    class User {
+        - workshopId : Guid
+        - roleId : Guid
+        - email : string
+        - passwordHash : string
+        - fullName : string
+        - isActive : bool
+    }
+
+    interface IUserRepository {
+        + findByEmailAndWorkshopId(email : string, workshopId : Guid) : User
+    }
+
+    class SecurityManager {
+        - _userRepo : IUserRepository
+        + authenticate(email : string, rawPassword : string) : User
+        - hashPassword(raw : string) : string
+    }
+
+    BaseEntity <|-- Role
+    BaseEntity <|-- Workshop
+    BaseEntity <|-- User
+    SecurityManager ..> IUserRepository : Use
+}
+
+' ══════════════════════════════════════════════
+' CONTEXT 1: FLEET (Clientes y Vehículos)
+' ══════════════════════════════════════════════
+
+package "Context 1: Fleet (Clientes y Vehículos)" {
+
+    enum DocumentType {
+        DNI
+        RUC
+        CE
+        PASSPORT
+    }
+
+    enum AppointmentStatus {
+        PENDING_APPROVAL
+        SCHEDULED
+        COMPLETED
+        CANCELLED
+    }
+
+    enum BayStatus {
+        VACANT
+        OCCUPIED
+    }
+
+    class Customer {
+        - workshopId : Guid
+        - documentType : DocumentType
+        - documentNumber : string
+        - firstName : string
+        - lastName : string
+        - businessName : string
+        - phone : string
+    }
+
+    class Vehicle {
+        - workshopId : Guid
+        - customerId : Guid
+        - plate : string
+        - vin : string
+        - brand : string
+        - model : string
+        - currentMileage : int
+    }
+
+    class Appointment {
+        - workshopId : Guid
+        - branchId : Guid
+        - customerId : Guid?
+        - vehicleId : Guid?
+        - appointmentDate : DateTime
+        - status : AppointmentStatus
+        - preRegisteredData : string
+    }
+
+    class WorkBay {
+        - workshopId : Guid
+        - branchId : Guid
+        - name : string
+        - status : BayStatus
+        - vehicleId : Guid?
+    }
+
+    class CustomerRequestDTO {
+        - documentType : string
+        - documentNumber : string
+        - firstName : string
+        - lastName : string
+    }
+
+    interface ICustomerRepository {
+        + existsByWorkshopIdAndDocNumber(workshopId : Guid, docNumber : string) : bool
+    }
+
+    interface IVehicleRepository {
+        + existsByWorkshopIdAndPlate(workshopId : Guid, plate : string) : bool
+        + findAllByCustomerId(customerId : Guid) : IEnumerable<Vehicle>
+    }
+
+    class FleetManagementService {
+        - _customerRepo : ICustomerRepository
+        - _vehicleRepo : IVehicleRepository
+        + registerCustomer(workshopId : Guid, dto : CustomerRequestDTO) : Customer
+        + updateVehicleMileage(vehicleId : Guid, newMileage : int) : Task
+        + checkMileageSuggestions(workshopId : Guid) : List<Vehicle>
+    }
+
+    BaseEntity <|-- Customer
+    BaseEntity <|-- Vehicle
+    BaseEntity <|-- Appointment
+    BaseEntity <|-- WorkBay
+    FleetManagementService ..> ICustomerRepository : Use
+    FleetManagementService ..> IVehicleRepository : Use
+    Vehicle "1" --> "1" Customer : belongs to
+    Appointment "0..1" --> "1" Customer : for
+    Appointment "0..1" --> "1" Vehicle : for
+    WorkBay "0..1" --> "1" Vehicle : contains
+}
+
+' ══════════════════════════════════════════════
+' CONTEXT 2: IOT (Hardware OBD2)
+' ══════════════════════════════════════════════
+
+package "Context 2: IOT (Hardware OBD2)" {
+
+    enum DeviceStatus {
+        ACTIVE
+        INACTIVE
+        FAILURE
+    }
+
+    enum Severity {
+        LOW
+        MEDIUM
+        HIGH
+        CRITICAL
+    }
+
+    class OBD2Device {
+        - workshopId : Guid
+        - vehicleId : Guid
+        - macAddress : string
+        - firmwareVersion : string
+        - status : DeviceStatus
+        - lastPing : DateTime
+    }
+
+    class DTCCode {
+        - code : string
+        - description : string
+        - severity : Severity
+    }
+
+    class VehicleDTCAlert {
+        - workshopId : Guid
+        - vehicleId : Guid
+        - dtcCode : string
+        - isActive : bool
+        - detectionDate : DateTime
+        - resolutionDate : DateTime
+    }
+
+    class OBD2Telemetry {
+        - id : long
+        - deviceId : Guid
+        - workshopId : Guid
+        - recordDate : DateTime
+        - rpm : int
+        - speedKmh : decimal
+        - tempEngineC : decimal
+        - fuelLevelPct : decimal
+        - batteryVoltage : decimal
+    }
+
+    class CurrentVehicleState {
+        - vehicleId : Guid
+        - deviceId : Guid
+        - lastReport : DateTime
+        - lastRpm : int
+        - fuelLevelPct : decimal
+    }
+
+    class TelemetryBatchDTO {
+        - deviceMac : string
+        - readings : List<SensorReadingDTO>
+        - dtcCodes : List<string>
+    }
+
+    class SensorReadingDTO {
+        - rpm : int
+        - temp : double
+        - fuel : double
+    }
+
+    interface IDeviceRepository {
+        + findByMacAddress(mac : string) : OBD2Device?
+    }
+
+    interface ITelemetryRepository {
+        + bulkInsertTelemetry(list : IEnumerable<OBD2Telemetry>) : Task
+        + replaceCurrentState(state : CurrentVehicleState) : Task
+    }
+
+    class OBD2EngineService {
+        - _deviceRepo : IDeviceRepository
+        - _telemetryRepo : ITelemetryRepository
+        + processBatch(workshopId : Guid, batch : TelemetryBatchDTO) : Task
+    }
+
+    BaseEntity <|-- OBD2Device
+    BaseEntity <|-- VehicleDTCAlert
+    BaseEntity <|-- OBD2Telemetry
+    OBD2EngineService ..> IDeviceRepository : Use
+    OBD2EngineService ..> ITelemetryRepository : Use
+    OBD2Device "1" --> "1" CurrentVehicleState : tracks
+}
+
+' ══════════════════════════════════════════════
+' CONTEXT 3: OPERATIONS (Órdenes de Trabajo)
+' ══════════════════════════════════════════════
+
+package "Context 3: Operations (Órdenes de Trabajo)" {
+
+    enum WorkOrderStatus {
+        DRAFT
+        DIAGNOSING
+        IN_PROGRESS
+        COMPLETED
+        INVOICED
+    }
+
+    enum TaskStatus {
+        PENDING
+        IN_PROGRESS
+        COMPLETED
+    }
+
+    enum QuoteStatus {
+        DRAFT
+        SENT
+        APPROVED
+        REJECTED
+        EXPIRED
+    }
+
+    class WorkOrder {
+        - workshopId : Guid
+        - vehicleId : Guid
+        - assignedMechanicId : Guid
+        - internalNumber : int
+        - status : WorkOrderStatus
+        - reportedSymptom : string
+        - currentMileage : int
+    }
+
+    class WorkOrderTask {
+        - workOrderId : Guid
+        - description : string
+        - estimatedHours : decimal
+        - actualHours : decimal
+        - laborHourCost : decimal
+        - totalLaborCost : decimal
+    }
+
+    class WorkOrderSparePart {
+        - workOrderId : Guid
+        - productId : Guid
+        - quantity : int
+        - unitPrice : decimal
+        - totalPrice : decimal
+    }
+
+    class Quote {
+        - workshopId : Guid
+        - customerId : Guid
+        - vehicleId : Guid
+        - internalNumber : int
+        - status : QuoteStatus
+        - expirationDate : DateTime
+        - subtotalAmount : decimal
+        - discountAmount : decimal
+        - taxAmount : decimal
+        - totalAmount : decimal
+    }
+
+    class QuoteItem {
+        - quoteId : Guid
+        - itemType : string
+        - description : string
+        - quantity : decimal
+        - unitPrice : decimal
+        - totalLineAmount : decimal
+    }
+
+    class InvalidStatusTransitionException {
+        - message : string
+    }
+
+    interface IWorkOrderRepository {
+        + findByWorkshopIdAndInternalNumber(workshopId : Guid, number : int) : WorkOrder?
+    }
+
+    class OperationsService {
+        - _workOrderRepo : IWorkOrderRepository
+        + createDraft(vehicleId : Guid) : WorkOrder
+        + advanceStatus(otId : Guid, newStatus : WorkOrderStatus) : Task
+        + generateQuoteFromWorkOrder(otId : Guid) : Quote
+    }
+
+    BaseEntity <|-- WorkOrder
+    BaseEntity <|-- WorkOrderTask
+    BaseEntity <|-- WorkOrderSparePart
+    BaseEntity <|-- Quote
+    WorkOrder "1" *-- "0..*" WorkOrderTask : contains
+    WorkOrder "1" *-- "0..*" WorkOrderSparePart : contains
+    Quote "1" *-- "1..*" QuoteItem : contains
+    Quote "1" --> "1" WorkOrder : based on
+    OperationsService ..> IWorkOrderRepository : Use
+}
+
+' ══════════════════════════════════════════════
+' CONTEXT 4: INVENTORY (Almacén y Proveedores)
+' ══════════════════════════════════════════════
+
+package "Context 4: Inventory (Almacén y Proveedores)" {
+
+    enum MovementType {
+        INBOUND
+        OUTBOUND
+        ADJUSTMENT
+        RETURN
+    }
+
+    class ProductCategory {
+        - workshopId : Guid
+        - name : string
+    }
+
+    class Supplier {
+        - workshopId : Guid
+        - businessName : string
+        - creditDays : int
+        - creditLineLimit : decimal
+    }
+
+    class Product {
+        - workshopId : Guid
+        - categoryId : Guid
+        - sku : string
+        - name : string
+        - unitPrice : decimal
+        - unitCost : decimal
+        - currentStock : int
+        - minimumStock : int
+    }
+
+    class StockMovement {
+        - workshopId : Guid
+        - productId : Guid
+        - movementType : MovementType
+        - quantity : int
+        - referenceId : Guid
+        - referenceType : string
+    }
+
+    class OutOfStockException {
+        - productName : string
+        - requestedQty : int
+    }
+
+    interface IProductRepository {
+        + findByWorkshopIdAndSku(workshopId : Guid, sku : string) : Product
+    }
+
+    interface IStockRepository {
+        + executeStockProcedure(productId : Guid, qty : int, type : MovementType, referenceId : Guid) : Task
+    }
+
+    class InventoryManager {
+        - _stockRepo : IStockRepository
+        + dispatchStock(productId : Guid, qty : int, referenceId : Guid) : Task
+    }
+
+    BaseEntity <|-- Product
+    BaseEntity <|-- ProductCategory
+    BaseEntity <|-- Supplier
+    BaseEntity <|-- StockMovement
+    Product "0..*" --> "1" ProductCategory : belongs to
+    Product "0..*" --> "1" Supplier : supplied by
+    InventoryManager ..> IStockRepository : Use
+}
+
+' ══════════════════════════════════════════════
+' CONTEXT 5: BILLING (Facturación)
+' ══════════════════════════════════════════════
+
+package "Context 5: Billing (Facturación)" {
+
+    enum VoucherType {
+        INVOICE
+        RECEIPT
+    }
+
+    enum SunatStatus {
+        PENDING
+        ACCEPTED
+        REJECTED
+    }
+
+    enum PaymentMethod {
+        CASH
+        CARD
+        TRANSFER
+    }
+
+    class Voucher {
+        - workshopId : Guid
+        - customerId : Guid
+        - workOrderId : Guid
+        - voucherType : VoucherType
+        - serie : string
+        - correlative : string
+        - issueDate : DateTime
+        - subtotalAmount : decimal
+        - discountAmount : decimal
+        - taxAmount : decimal
+        - totalAmount : decimal
+        - sunatStatus : SunatStatus
+    }
+
+    class VoucherDetail {
+        - voucherId : Guid
+        - lineNumber : int
+        - productId : Guid?
+        - description : string
+        - quantity : decimal
+        - unitValue : decimal
+        - igvAmount : decimal
+        - totalLineValue : decimal
+    }
+
+    class VoucherPayment {
+        - voucherId : Guid
+        - paymentMethod : PaymentMethod
+        - amount : decimal
+        - transactionReference : string
+    }
+
+    class FinancialMetrics {
+        - period : string
+        - totalRevenue : decimal
+        - totalCost : decimal
+        - profitabilityPct : decimal
+    }
+
+    interface IBillingRepository {
+        + save(voucher : Voucher) : Voucher
+        + findById(id : Guid) : Voucher
+    }
+
+    class BillingManager {
+        - _billingRepo : IBillingRepository
+        + buildPendingVoucher(workshopId : Guid, dto : CheckoutRequestDTO) : Voucher
+    }
+
+    class ReportingService {
+        + getProfitabilityReport(workshopId : Guid, startDate : DateTime, endDate : DateTime) : FinancialMetrics
+        + exportAccountingReport(workshopId : Guid, period : string) : byte[]
+    }
+
+    class CheckoutOrchestrator {
+        - billingManager : BillingManager
+        - inventoryManager : InventoryManager
+        - eventPublisher : EventPublisherService
+        + executeSale(workshopId : Guid, dto : CheckoutRequestDTO) : VoucherResponseDTO
+    }
+
+    BaseEntity <|-- Voucher
+    Voucher "1" *-- "1..*" VoucherDetail : contains
+    Voucher "1" *-- "1..*" VoucherPayment : contains
+    BillingManager ..> IBillingRepository : Use
+    CheckoutOrchestrator ..> BillingManager : Use
+    ReportingService ..> IBillingRepository : Use
+}
+
+@enduml
