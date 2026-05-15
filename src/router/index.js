@@ -4,6 +4,7 @@ import { dashboardRoutes } from '../home/presentation/dashboard-routes.js';
 import { appointmentsRoutes } from '../appointments/presentation/appointments-routes.js';
 import { inventoryRoutes } from '../inventory/presentation/inventory-routes.js';
 import { telemetryRoutes } from '../telemetry/presentation/telemetry-routes.js';
+import { billingRoutes } from '../billing/presentation/billing-routes.js';
 
 /**
  * Main Application Router.
@@ -20,7 +21,8 @@ const router = createRouter({
     ...customersRoutes,
     ...appointmentsRoutes,
     ...inventoryRoutes,
-    ...telemetryRoutes
+    ...telemetryRoutes,
+    ...billingRoutes
   ]
 });
 
