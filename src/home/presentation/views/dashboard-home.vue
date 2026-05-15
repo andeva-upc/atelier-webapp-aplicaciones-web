@@ -17,7 +17,7 @@
             <span class="kpi-title">{{ $t('dashboard.kpi.income', 'Monthly income') }}</span>
             <div class="kpi-icon icon-blue"><i class="pi pi-dollar"></i></div>
           </div>
-          <div class="kpi-value">S/ {{ dashboardStore.kpis.income }}</div>
+          <div class="kpi-value">S/ {{ Number(dashboardStore.kpis.income).toFixed(3) }}</div>
           <div class="kpi-footer text-green">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
             {{ $t('dashboard.kpi.vs-last-month', { percent: dashboardStore.kpis.incomeGrowth }) }}
