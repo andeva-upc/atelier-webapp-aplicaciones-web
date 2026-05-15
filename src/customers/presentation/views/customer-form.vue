@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, ref, computed } from 'vue';
 import { useCustomersStore } from '../../application/customers.store.js';
+import { Customer } from '../../domain/model/customer.entity.js';
 
 const props = defineProps({
   visible: Boolean
@@ -20,71 +21,109 @@ const form = reactive({
   documentType: 'DNI',
   documentNumber: '',
   phone: '',
-  fullName: '',
+  firstName: '',
+  lastName: '',
   email: ''
 });
 
 const isSearching = ref(false);
+const searchPerformed = ref(false);
+const found = ref(false);
 
 const close = () => {
+  // Reset form
+  form.documentNumber = '';
+  form.phone = '';
+  form.firstName = '';
+  form.lastName = '';
+  form.email = '';
+  searchPerformed.value = false;
+  found.value = false;
   emit('update:visible', false);
 };
 
-const isFormValid = computed(() => {
+const isSearchEnabled = computed(() => {
   const docNum = form.documentNumber ? form.documentNumber.trim() : '';
   const phoneNum = form.phone ? form.phone.trim() : '';
 
-  // Si hay teléfono, asumimos formato de 9 dígitos (estándar móvil)
-  if (phoneNum.length > 0) {
-    return phoneNum.length >= 9;
-  }
-
-  // Validaciones por tipo de documento
+  // Validaciones por tipo de documento si hay DNI
   if (docNum.length > 0) {
     switch (form.documentType) {
-      case 'DNI':
-        return docNum.length === 8;
-      case 'RUC':
-        return docNum.length === 11;
-      case 'CE':
-        return docNum.length >= 9 && docNum.length <= 12; // C.E. suele ser 9, pero a veces hasta 12
-      case 'PASSPORT':
-        return docNum.length >= 6; // Pasaportes varían, un mínimo razonable es 6
-      default:
-        return docNum.length > 0;
+      case 'DNI': return docNum.length === 8;
+      case 'RUC': return docNum.length === 11;
+      case 'CE': return docNum.length >= 8;
+      default: return docNum.length >= 6;
     }
+  }
+
+  // Si no hay DNI, validar teléfono
+  if (phoneNum.length > 0) {
+    return phoneNum.length >= 9;
   }
 
   return false;
 });
 
+const isRegisterEnabled = computed(() => {
+  return form.firstName.trim().length > 0 && 
+         form.lastName.trim().length > 0 && 
+         form.email.trim().length > 5 &&
+         form.email.includes('@');
+});
+
 const handleSearch = async () => {
-  if (!isFormValid.value) return;
+  if (!isSearchEnabled.value) return;
   
   isSearching.value = true;
+  searchPerformed.value = false;
+  
   try {
     const preRegistration = await store.findPreRegistration({
       document: form.documentNumber,
       phone: form.phone
     });
     
+    searchPerformed.value = true;
+    
     if (preRegistration) {
-      const customerData = {
-        fullName: preRegistration.pre_registered_full_name,
-        email: preRegistration.pre_registered_email,
-        documentType: preRegistration.pre_registered_document_type,
-        documentNumber: preRegistration.pre_registered_document_number,
-        phone: preRegistration.pre_registered_phone
-      };
-      
-      emit('save', customerData);
-      close();
+      found.value = true;
+      // Split full name if possible
+      const fullName = preRegistration.pre_registered_full_name || '';
+      const nameParts = fullName.split(' ');
+      form.firstName = nameParts[0] || '';
+      form.lastName = nameParts.slice(1).join(' ') || '';
+      form.email = preRegistration.pre_registered_email || '';
+      form.documentType = preRegistration.pre_registered_document_type || form.documentType;
+      form.documentNumber = preRegistration.pre_registered_document_number || form.documentNumber;
+      form.phone = preRegistration.pre_registered_phone || form.phone;
     } else {
-      console.log('No pre-registration found for the provided criteria.');
+      found.value = false;
+      // If not found, we clear the fields to allow manual entry
+      form.firstName = '';
+      form.lastName = '';
+      form.email = '';
     }
   } finally {
     isSearching.value = false;
   }
+};
+
+const handleRegister = () => {
+  if (!isRegisterEnabled.value) return;
+
+  const newCustomer = new Customer(
+    Date.now().toString(), // BaseEntity requires a non-null ID, json-server will accept it or we can just generate it here
+    form.documentType,
+    form.documentNumber,
+    form.firstName,
+    form.lastName,
+    form.email,
+    form.phone,
+    '' // businessName empty for now
+  );
+
+  emit('save', newCustomer);
+  close();
 };
 </script>
 
@@ -94,7 +133,7 @@ const handleSearch = async () => {
     @update:visible="$emit('update:visible', $event)"
     :modal="true" 
     class="custom-registration-dialog"
-    :style="{ width: '580px' }"
+    :style="{ width: '620px' }"
     :draggable="false"
     :closable="true"
     :showHeader="true"
@@ -102,53 +141,93 @@ const handleSearch = async () => {
   >
     <template #header>
       <div class="dialog-header">
-        <h2 class="dialog-title">Verify pre-registration</h2>
+        <h2 class="dialog-title">{{ searchPerformed ? 'Complete Registration' : 'Verify pre-registration' }}</h2>
       </div>
     </template>
 
     <div class="dialog-content p-5">
-      <p class="description-text mb-6">
-        Enter the driver's credentials (by document or phone number) to verify passive matches or online appointments.
-      </p>
+      <div v-if="!searchPerformed">
+        <p class="description-text mb-6">
+          Enter the driver's credentials (by document or phone number) to verify passive matches or online appointments.
+        </p>
 
-      <div class="flex gap-4 mb-5">
-        <div class="flex flex-column doc-type" style="flex: 0 0 160px;">
-          <label class="mb-2 font-bold text-sm text-color-secondary">Document type</label>
-          <pv-select 
-            v-model="form.documentType" 
-            :options="documentTypes" 
-            optionLabel="label" 
-            optionValue="value"
-            class="custom-select w-full"
-          />
+        <div class="flex gap-4 mb-5">
+          <div class="flex flex-column doc-type" style="flex: 0 0 160px;">
+            <label class="mb-2 font-bold text-sm text-color-secondary">Document type</label>
+            <pv-select 
+              v-model="form.documentType" 
+              :options="documentTypes" 
+              optionLabel="label" 
+              optionValue="value"
+              class="custom-select w-full"
+            />
+          </div>
+          <div class="flex flex-column flex-1">
+            <label class="mb-2 font-bold text-sm text-color-secondary">Document number</label>
+            <pv-icon-field iconPosition="left" class="w-full relative flex align-items-center">
+              <pv-input-icon class="pi pi-id-card" />
+              <pv-input-text 
+                v-model="form.documentNumber" 
+                placeholder="Ej. 77889900" 
+                class="custom-input w-full"
+              />
+            </pv-icon-field>
+          </div>
         </div>
-        <div class="flex flex-column flex-1">
-          <label class="mb-2 font-bold text-sm text-color-secondary">Document number</label>
+
+        <pv-divider align="center" class="my-6">
+          <span class="divider-text px-3 font-extrabold text-xs text-color-secondary uppercase tracking-widest">OR ALTERNATIVELY</span>
+        </pv-divider>
+
+        <div class="flex flex-column w-full">
+          <label class="mb-2 font-bold text-sm text-color-secondary">Mobile phone</label>
           <pv-icon-field iconPosition="left" class="w-full relative flex align-items-center">
-            <pv-input-icon class="pi pi-id-card" />
+            <pv-input-icon class="pi pi-mobile" />
             <pv-input-text 
-              v-model="form.documentNumber" 
-              placeholder="Ej. 77889900" 
+              v-model="form.phone" 
+              placeholder="Ej. 999888777" 
               class="custom-input w-full"
             />
           </pv-icon-field>
         </div>
       </div>
 
-      <pv-divider align="center" class="my-6">
-        <span class="divider-text px-3 font-extrabold text-xs text-color-secondary uppercase tracking-widest">OR ALTERNATIVELY</span>
-      </pv-divider>
+      <!-- Result and Manual Entry Section -->
+      <div v-else class="manual-entry-section animation-duration-400 fadein">
+        <div v-if="found" class="flex align-items-center gap-3 p-3 border-round-xl bg-green-50 border-1 border-green-200 mb-5">
+          <i class="pi pi-check-circle text-green-600 text-xl"></i>
+          <div>
+            <p class="m-0 font-bold text-green-800">Pre-registration found!</p>
+            <p class="m-0 text-sm text-green-700">We've populated the fields with the existing information.</p>
+          </div>
+        </div>
+        <div v-else class="flex align-items-center gap-3 p-3 border-round-xl bg-blue-50 border-1 border-blue-200 mb-5">
+          <i class="pi pi-info-circle text-blue-600 text-xl"></i>
+          <div>
+            <p class="m-0 font-bold text-blue-800">No record found</p>
+            <p class="m-0 text-sm text-blue-700">Please enter the customer details manually below.</p>
+          </div>
+        </div>
 
-      <div class="flex flex-column w-full">
-        <label class="mb-2 font-bold text-sm text-color-secondary">Mobile phone</label>
-        <pv-icon-field iconPosition="left" class="w-full relative flex align-items-center">
-          <pv-input-icon class="pi pi-mobile" />
-          <pv-input-text 
-            v-model="form.phone" 
-            placeholder="Ej. 999888777" 
-            class="custom-input w-full"
-          />
-        </pv-icon-field>
+        <div class="grid mt-2">
+          <div class="col-12 md:col-6 mb-4">
+            <label class="mb-2 block font-bold text-sm text-color-secondary">First Name</label>
+            <pv-input-text v-model="form.firstName" class="custom-input-small w-full" placeholder="John" />
+          </div>
+          <div class="col-12 md:col-6 mb-4">
+            <label class="mb-2 block font-bold text-sm text-color-secondary">Last Name</label>
+            <pv-input-text v-model="form.lastName" class="custom-input-small w-full" placeholder="Doe" />
+          </div>
+          <div class="col-12 mb-4">
+            <label class="mb-2 block font-bold text-sm text-color-secondary">Email Address</label>
+            <pv-icon-field iconPosition="left">
+              <pv-input-icon class="pi pi-envelope" />
+              <pv-input-text v-model="form.email" class="custom-input-small w-full" placeholder="john.doe@example.com" />
+            </pv-icon-field>
+          </div>
+        </div>
+        
+        <pv-button label="Change search criteria" icon="pi pi-arrow-left" text class="p-0 mt-2 text-primary font-bold text-sm" @click="searchPerformed = false" />
       </div>
     </div>
 
@@ -160,11 +239,19 @@ const handleSearch = async () => {
           class="cancel-btn" 
         />
         <pv-button 
+          v-if="!searchPerformed"
           label="Search record" 
           @click="handleSearch" 
           :loading="isSearching"
-          :disabled="!isFormValid"
+          :disabled="!isSearchEnabled"
           class="search-btn" 
+        />
+        <pv-button 
+          v-else
+          label="Register customer" 
+          @click="handleRegister" 
+          :disabled="!isRegisterEnabled"
+          class="register-btn" 
         />
       </div>
     </template>
@@ -225,7 +312,8 @@ const handleSearch = async () => {
 
 /* Base styles for Select and Input */
 .custom-registration-dialog .custom-select, 
-.custom-registration-dialog .custom-input {
+.custom-registration-dialog .custom-input,
+.custom-registration-dialog .custom-input-small {
   border-radius: 16px !important;
   border: 1px solid #e2e8f0 !important;
   height: 60px !important;
@@ -234,6 +322,16 @@ const handleSearch = async () => {
   color: #1e293b !important;
   outline: none !important;
   transition: all 0.2s ease;
+}
+
+.custom-registration-dialog .custom-input-small {
+  height: 50px !important;
+  font-size: 1rem !important;
+  padding-left: 1rem !important;
+}
+
+.custom-registration-dialog .p-iconfield .custom-input-small {
+  padding-left: 3rem !important;
 }
 
 .custom-registration-dialog .custom-input {
@@ -254,7 +352,7 @@ const handleSearch = async () => {
   height: 60px !important;
   display: flex !important;
   align-items: center !important;
-  line-height: 1 !important; /* Evita desplazamientos por line-height */
+  line-height: 1 !important;
 }
 
 :deep(.custom-select .p-select-dropdown) {
@@ -263,10 +361,6 @@ const handleSearch = async () => {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-}
-
-:deep(.custom-select .p-select-overlay) {
-  border-radius: 12px !important;
 }
 
 .custom-registration-dialog .custom-select:focus-within,
@@ -281,12 +375,17 @@ const handleSearch = async () => {
   color: #94a3b8 !important;
   font-size: 1.3rem !important;
   z-index: 10 !important;
-  height: 60px !important; /* Mismo alto que el input */
+  height: 60px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  top: 0 !important; /* Empezar desde arriba */
-  transform: none !important; /* Eliminar el transform para evitar sub-pixeles */
+  top: 0 !important;
+  transform: none !important;
+}
+
+.manual-entry-section .p-inputicon {
+  height: 50px !important;
+  font-size: 1.1rem !important;
 }
 
 :deep(.p-iconfield) {
@@ -296,16 +395,16 @@ const handleSearch = async () => {
   position: relative !important;
 }
 
+.manual-entry-section :deep(.p-iconfield) {
+  height: 50px !important;
+}
+
 :deep(.p-divider-content) {
   background: transparent !important;
 }
 
 :deep(.p-divider.p-divider-horizontal:before) {
   border-top: 1px solid #f1f5f9 !important;
-}
-
-.custom-registration-dialog .divider-text {
-  font-family: 'Arimo', sans-serif;
 }
 
 .custom-registration-dialog .footer-actions {
@@ -323,7 +422,8 @@ const handleSearch = async () => {
   font-weight: 700 !important;
 }
 
-.custom-registration-dialog .search-btn {
+.custom-registration-dialog .search-btn,
+.custom-registration-dialog .register-btn {
   background: #0071EB !important;
   color: #ffffff !important;
   padding: 0.85rem 3rem !important;
@@ -332,7 +432,8 @@ const handleSearch = async () => {
   border: none !important;
 }
 
-.custom-registration-dialog .search-btn:disabled {
+.custom-registration-dialog .search-btn:disabled,
+.custom-registration-dialog .register-btn:disabled {
   background: #cbd5e1 !important;
   cursor: not-allowed;
 }

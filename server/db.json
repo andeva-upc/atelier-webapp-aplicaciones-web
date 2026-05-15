@@ -447,7 +447,10 @@
       "pre_registered_full_name": "Juan Perez",
       "pre_registered_email": "juan.perez@gmail.com",
       "pre_registered_phone": "988777666",
+      "pre_registered_document_type": "DNI",
+      "pre_registered_document_number": "12345678",
       "pre_registered_vehicle_plate": "XYZ-999",
+      "pre_registered_vehicle_brand_model": "Toyota Corolla",
       "version": 0,
       "deleted_at": null,
       "created_at": "2026-05-13T08:00:00Z",
@@ -886,15 +889,15 @@
       "work_order_id": "wo1",
       "description": "Afinamiento Electrónico",
       "estimated_hours": 2.5,
-      "unit_price": 80.00,
+      "unit_price": 80,
       "status": "DOING"
     },
     {
       "id": "wt2",
       "work_order_id": "wo2",
       "description": "Mantenimiento Mayor 60k",
-      "estimated_hours": 5.0,
-      "unit_price": 350.00,
+      "estimated_hours": 5,
+      "unit_price": 350,
       "status": "COMPLETED"
     },
     {
@@ -902,15 +905,15 @@
       "work_order_id": "wo4",
       "description": "Cambio de Pastillas de Freno",
       "estimated_hours": 1.5,
-      "unit_price": 60.00,
+      "unit_price": 60,
       "status": "DOING"
     },
     {
       "id": "wt4",
       "work_order_id": "wo5",
       "description": "Revisión de Seguridad 5k",
-      "estimated_hours": 1.0,
-      "unit_price": 40.00,
+      "estimated_hours": 1,
+      "unit_price": 40,
       "status": "DOING"
     }
   ],
@@ -921,8 +924,8 @@
       "sku": "CASTROL-5W30",
       "name": "Aceite Castrol Sintético 5W30",
       "category": "Lubricantes",
-      "unit_price": 55.00,
-      "unit_cost": 32.00,
+      "unit_price": 55,
+      "unit_cost": 32,
       "current_stock": 120,
       "minimum_stock": 20
     },
@@ -932,8 +935,8 @@
       "sku": "FIL-TOY-001",
       "name": "Filtro de Aceite Toyota Original",
       "category": "Filtros",
-      "unit_price": 35.00,
-      "unit_cost": 15.00,
+      "unit_price": 35,
+      "unit_cost": 15,
       "current_stock": 45,
       "minimum_stock": 10
     },
@@ -943,8 +946,8 @@
       "sku": "NGK-IRIDIUM-01",
       "name": "Bujía NGK Iridium",
       "category": "Encendido",
-      "unit_price": 45.00,
-      "unit_cost": 22.00,
+      "unit_price": 45,
+      "unit_cost": 22,
       "current_stock": 80,
       "minimum_stock": 15
     },
@@ -954,8 +957,8 @@
       "sku": "BRK-CERAMIC-02",
       "name": "Pastillas de Freno Cerámicas",
       "category": "Frenos",
-      "unit_price": 120.00,
-      "unit_cost": 65.00,
+      "unit_price": 120,
+      "unit_cost": 65,
       "current_stock": 12,
       "minimum_stock": 5
     },
@@ -965,8 +968,8 @@
       "sku": "PRESTONE-EXT-01",
       "name": "Refrigerante Prestone 1 Gal",
       "category": "Líquidos",
-      "unit_price": 48.00,
-      "unit_cost": 28.00,
+      "unit_price": 48,
+      "unit_cost": 28,
       "current_stock": 35,
       "minimum_stock": 8
     },
@@ -976,13 +979,33 @@
       "sku": "AIR-FIL-002",
       "name": "Filtro de Aire Universal",
       "category": "Filtros",
-      "unit_price": 40.00,
-      "unit_cost": 18.00,
+      "unit_price": 40,
+      "unit_cost": 18,
       "current_stock": 25,
       "minimum_stock": 5
     }
   ],
   "quotes": [
+    {
+      "id": "q1ba938d-ef12-42da-bebe-0f192bca99bb",
+      "workshop_id": "e26b1580-b3b0-466d-8c10-ca7f62d1c9ef",
+      "customer_id": "c1-aldo",
+      "vehicle_id": "v1-corolla",
+      "work_order_id": "wo1ba38c-ef12-4f3d-be23-df129bca23bb",
+      "total_amount": 250,
+      "status": "APPROVED",
+      "created_at": "2026-05-06T18:40:00Z"
+    },
+    {
+      "id": "q2ba938d-ef12-42da-bebe-0f192bca99cc",
+      "workshop_id": "e26b1580-b3b0-466d-8c10-ca7f62d1c9ef",
+      "customer_id": "c1-aldo",
+      "vehicle_id": "v1-corolla",
+      "work_order_id": "wo3ba38c-ef12-4f3d-be23-df129bca23dd",
+      "total_amount": 400,
+      "status": "SENT",
+      "created_at": "2026-05-07T10:00:00Z"
+    },
     {
       "id": "q1",
       "workshop_id": "e26b1580-b3b0-466d-8c10-ca7f62d1c9ef",
@@ -1134,8 +1157,8 @@
       "item_type": "SERVICE",
       "description": "Mano de Obra Cambio de Aceite",
       "quantity": 1,
-      "unit_price": 50.00,
-      "total_price": 50.00
+      "unit_price": 50,
+      "total_price": 50
     },
     {
       "id": "qi2",
@@ -1144,68 +1167,86 @@
       "reference_id": "p1-aceite",
       "description": "Aceite Castrol 5W30 (Galón)",
       "quantity": 4,
-      "unit_price": 50.00,
-      "total_price": 200.00
+      "unit_price": 50,
+      "total_price": 200
     }
   ],
   "vouchers": [
     {
       "id": "vo-old-1",
       "workshop_id": "e26b1580-b3b0-466d-8c10-ca7f62d1c9ef",
+      "customer_id": "c1-aldo",
+      "customer_name": "Aldo Mendoza Riva",
       "work_order_id": "wo-completed-old",
+      "voucher_number": "B001-00001",
       "type": "INVOICE",
+      "status": "PAID",
       "currency": "PEN",
-      "subtotal_amount": 1000.00,
-      "discount_amount": 0.00,
-      "tax_percentage": 18.00,
-      "total_amount": 1180.00,
+      "subtotal": 1000,
+      "tax_amount": 180,
+      "total_amount": 1180,
+      "issued_at": "2026-04-10T16:00:00Z",
       "sunat_status": "ACCEPTED",
+      "version": 1,
       "created_at": "2026-04-10T15:00:00Z"
     },
     {
       "id": "vo-old-2",
       "workshop_id": "e26b1580-b3b0-466d-8c10-ca7f62d1c9ef",
+      "customer_id": "c1-aldo",
+      "customer_name": "Aldo Mendoza Riva",
       "work_order_id": "wo-completed-old-2",
+      "voucher_number": "B001-00002",
       "type": "INVOICE",
+      "status": "PAID",
       "currency": "PEN",
-      "subtotal_amount": 1500.00,
-      "discount_amount": 50.00,
-      "tax_percentage": 18.00,
-      "total_amount": 1711.00,
+      "subtotal": 1500,
+      "tax_amount": 211,
+      "total_amount": 1711,
+      "issued_at": "2026-04-25T12:00:00Z",
       "sunat_status": "ACCEPTED",
+      "version": 1,
       "created_at": "2026-04-25T11:00:00Z"
     },
     {
       "id": "vo1",
       "workshop_id": "e26b1580-b3b0-466d-8c10-ca7f62d1c9ef",
+      "customer_id": "c3c047ca-51ff-4c22-b9cf-ae08fbff34dd",
+      "customer_name": "Maria Fe Torres Ugarte",
       "work_order_id": "wo1",
+      "voucher_number": "B001-00045",
       "type": "INVOICE",
+      "status": "PAID",
       "currency": "PEN",
-      "subtotal_amount": 300.00,
-      "discount_amount": 30.00,
-      "tax_percentage": 18.00,
-      "total_amount": 318.60,
+      "subtotal": 300,
+      "tax_amount": 18.6,
+      "total_amount": 318.6,
+      "issued_at": "2026-05-12T10:00:00Z",
       "sunat_status": "ACCEPTED",
       "version": 0,
       "deleted_at": null,
       "created_at": "2026-05-05T17:15:00Z",
-      "updated_at": "2026-05-05T17:15:00Z"
+      "updated_at": "2026-05-12T10:00:00Z"
     },
     {
       "id": "vo2",
       "workshop_id": "e26b1580-b3b0-466d-8c10-ca7f62d1c9ef",
+      "customer_id": "c3c047ca-51ff-4c22-b9cf-ae08fbff34dd",
+      "customer_name": "Maria Fe Torres Ugarte",
       "work_order_id": "wo2",
+      "voucher_number": "B001-00046",
       "type": "INVOICE",
+      "status": "PAID",
       "currency": "PEN",
-      "subtotal_amount": 1200.00,
-      "discount_amount": 100.00,
-      "tax_percentage": 18.00,
-      "total_amount": 1298.00,
+      "subtotal": 1100,
+      "tax_amount": 198,
+      "total_amount": 1298,
+      "issued_at": "2026-05-12T17:30:00Z",
       "sunat_status": "ACCEPTED",
       "version": 0,
       "deleted_at": null,
-      "created_at": "2026-05-12T17:00:00Z",
-      "updated_at": "2026-05-12T17:00:00Z"
+      "created_at": "2026-05-12T17:30:00Z",
+      "updated_at": "2026-05-12T17:30:00Z"
     }
   ],
   "voucher_items": [
@@ -1216,8 +1257,8 @@
       "reference_id": "p1-aceite",
       "description": "Aceite Castrol 5W30",
       "quantity": 10,
-      "unit_price": 100.00,
-      "total_price": 1000.00
+      "unit_price": 100,
+      "total_price": 1000
     },
     {
       "id": "vi1",
@@ -1225,8 +1266,8 @@
       "item_type": "SERVICE",
       "description": "Mantenimiento Preventivo 40k",
       "quantity": 1,
-      "unit_price": 100.00,
-      "total_price": 100.00
+      "unit_price": 100,
+      "total_price": 100
     },
     {
       "id": "vi2",
@@ -1235,15 +1276,15 @@
       "reference_id": "p2-filtro",
       "description": "Kit de Filtros",
       "quantity": 2,
-      "unit_price": 100.00,
-      "total_price": 200.00
+      "unit_price": 100,
+      "total_price": 200
     }
   ],
   "payments": [
     {
       "id": "pay-old-1",
       "voucher_id": "vo-old-1",
-      "amount": 1180.00,
+      "amount": 1180,
       "currency": "PEN",
       "method": "CASH",
       "paid_at": "2026-04-10T16:00:00Z",
@@ -1253,7 +1294,7 @@
     {
       "id": "pay-old-2",
       "voucher_id": "vo-old-2",
-      "amount": 1711.00,
+      "amount": 1711,
       "currency": "PEN",
       "method": "BANK_TRANSFER",
       "paid_at": "2026-04-25T12:00:00Z",
@@ -1263,7 +1304,7 @@
     {
       "id": "pay1",
       "voucher_id": "vo1",
-      "amount": 318.60,
+      "amount": 318.6,
       "currency": "PEN",
       "method": "BANK_TRANSFER",
       "paid_at": "2026-05-12T10:00:00Z",
@@ -1273,7 +1314,7 @@
     {
       "id": "pay2",
       "voucher_id": "vo2",
-      "amount": 1298.00,
+      "amount": 1298,
       "currency": "PEN",
       "method": "YAPE",
       "paid_at": "2026-05-12T17:30:00Z",
@@ -1348,7 +1389,7 @@
       "speed_kmh": 0,
       "odometer_km": 42150,
       "fuel_level_percent": 45.2,
-      "temp": 95.0
+      "temp": 95
     },
     {
       "id": 3,
@@ -1367,7 +1408,7 @@
       "rpm": 850,
       "speed_kmh": 0,
       "odometer_km": 12500,
-      "fuel_level_percent": 80.0,
+      "fuel_level_percent": 80,
       "temp": 89.2
     },
     {
@@ -1378,7 +1419,7 @@
       "speed_kmh": 95,
       "odometer_km": 34990,
       "fuel_level_percent": 30.1,
-      "temp": 98.0
+      "temp": 98
     },
     {
       "id": 6,
@@ -1397,7 +1438,7 @@
       "rpm": 850,
       "speed_kmh": 0,
       "odometer_km": 8500,
-      "fuel_level_percent": 95.0,
+      "fuel_level_percent": 95,
       "temp": 75.2
     },
     {
@@ -1418,7 +1459,7 @@
       "speed_kmh": 0,
       "odometer_km": 18000,
       "fuel_level_percent": 60.3,
-      "temp": 93.0
+      "temp": 93
     },
     {
       "id": 10,
@@ -1427,8 +1468,8 @@
       "rpm": 2000,
       "speed_kmh": 45,
       "odometer_km": 44990,
-      "fuel_level_percent": 70.0,
-      "temp": 90.0
+      "fuel_level_percent": 70,
+      "temp": 90
     },
     {
       "id": 11,
@@ -1447,7 +1488,7 @@
       "rpm": 2200,
       "speed_kmh": 60,
       "odometer_km": 54990,
-      "fuel_level_percent": 50.0,
+      "fuel_level_percent": 50,
       "temp": 95.5
     },
     {
@@ -1468,7 +1509,7 @@
       "speed_kmh": 15,
       "odometer_km": 81998,
       "fuel_level_percent": 25.5,
-      "temp": 80.0
+      "temp": 80
     },
     {
       "id": 15,
@@ -1477,7 +1518,7 @@
       "rpm": 1900,
       "speed_kmh": 40,
       "odometer_km": 4995,
-      "fuel_level_percent": 90.0,
+      "fuel_level_percent": 90,
       "temp": 88.4
     },
     {
@@ -1497,7 +1538,7 @@
       "rpm": 1600,
       "speed_kmh": 25,
       "odometer_km": 59990,
-      "fuel_level_percent": 55.0,
+      "fuel_level_percent": 55,
       "temp": 86.7
     },
     {
