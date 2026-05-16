@@ -36,7 +36,8 @@ const handlePaymentSuccess = async (paymentData) => {
 
 const tabOptions = ref([
   { label: t('billing.tabs.income_expenses'), value: 'income_expenses' },
-  { label: t('billing.tabs.quotes'), value: 'quotes' }
+  { label: t('billing.tabs.quotes'), value: 'quotes' },
+  { label: t('billing.tabs.vouchers'), value: 'vouchers' }
 ]);
 
 const billingStats = computed(() => [
@@ -177,6 +178,11 @@ const quotes = computed(() => {
     return dateB - dateA;
   });
 });
+const recentQuotes = computed(() => quotes.value.slice(0, 5));
+
+const goToQuotesTab = () => {
+  activeTab.value = 'quotes';
+};
 
 const getVariationClass = (val) => {
   if (!val) return 'text-500';
@@ -189,6 +195,7 @@ const getStatusSeverity = (status) => {
     case 'pending': return 'warning';
     case 'sent': return 'info';
     case 'draft': return 'secondary';
+    case 'paid': return 'success';
     default: return null;
   }
 };
@@ -313,6 +320,53 @@ const getStatusSeverity = (status) => {
           </pv-data-table>
         </template>
       </pv-card>
+
+      <!-- Recent Quotes Section (New) -->
+      <pv-card class="mt-6 table-container-card">
+        <template #content>
+          <div class="flex justify-content-between align-items-center mb-5">
+            <h2 class="table-title m-0">{{ t('billing.title_recent') }}</h2>
+            <pv-button 
+              :label="t('billing.view_all')" 
+              text 
+              class="view-all-btn" 
+              @click="goToQuotesTab"
+            />
+          </div>
+          
+          <pv-data-table :value="recentQuotes" class="custom-table" responsiveLayout="scroll">
+            <pv-column field="displayId" :header="'N°'">
+              <template #body="slotProps">
+                <span class="quote-id-text font-bold">{{ slotProps.data.displayId }}</span>
+              </template>
+            </pv-column>
+            
+            <pv-column field="client" :header="t('billing.quotes_table.columns.client')">
+              <template #body="slotProps">
+                <span class="text-600">{{ slotProps.data.client }}</span>
+              </template>
+            </pv-column>
+            
+            <pv-column field="total" :header="t('billing.quotes_table.columns.total')">
+              <template #body="slotProps">
+                <span class="text-700">S/ {{ slotProps.data.total.toLocaleString() }}</span>
+              </template>
+            </pv-column>
+            
+            <pv-column field="status" :header="t('billing.quotes_table.columns.status')">
+              <template #body="slotProps">
+                <pv-tag 
+                  :value="t('billing.status.' + slotProps.data.status)" 
+                  :severity="getStatusSeverity(slotProps.data.status)" 
+                  rounded 
+                  class="px-3 py-1 custom-status-tag"
+                  :class="'status-' + slotProps.data.status"
+                />
+              </template>
+            </pv-column>
+          </pv-data-table>
+        </template>
+      </pv-card>
     </div>
 
     <!-- Quotes Content -->
@@ -372,8 +426,8 @@ const getStatusSeverity = (status) => {
               <template #body="slotProps">
                 <div class="flex gap-3 align-items-center">
                   <pv-button 
-                    v-if="slotProps.data.status === 'pending' || slotProps.data.status === 'sent'"
-                    icon="pi pi-dollar" 
+                    v-if="slotProps.data.status === 'pending' || slotProps.data.status === 'sent' || slotProps.data.status === 'draft'"
+                    icon="pi pi-money-bill" 
                     label="Cobrar" 
                     class="p-0 checkout-btn flex align-items-center gap-1" 
                     text
@@ -381,6 +435,59 @@ const getStatusSeverity = (status) => {
                   />
                   <pv-button icon="pi pi-download" label="PDF" text class="p-0 pdf-btn flex flex-row-reverse align-items-center gap-1" />
                 </div>
+              </template>
+            </pv-column>
+          </pv-data-table>
+        </template>
+      </pv-card>
+    </div>
+
+    <!-- Vouchers Content (New) -->
+    <div v-else-if="activeTab === 'vouchers'" class="fadein animation-duration-300">
+      <pv-card class="table-container-card">
+        <template #content>
+          <div class="flex justify-content-between align-items-center mb-5 p-3">
+            <h2 class="table-title m-0">{{ t('billing.tabs.vouchers') }}</h2>
+          </div>
+          <pv-data-table :value="billingStore.vouchers" class="custom-table" responsiveLayout="scroll">
+            <pv-column field="displayId" :header="t('billing.vouchers_table.columns.id')">
+              <template #body="slotProps">
+                <span class="font-bold text-800">{{ slotProps.data.displayId }}</span>
+              </template>
+            </pv-column>
+            
+            <pv-column field="customerName" :header="t('billing.vouchers_table.columns.client')">
+              <template #body="slotProps">
+                <span class="text-700">{{ slotProps.data.customerName }}</span>
+              </template>
+            </pv-column>
+            
+            <pv-column field="displayDate" :header="t('billing.vouchers_table.columns.date')">
+              <template #body="slotProps">
+                <span class="text-600">{{ slotProps.data.displayDate }}</span>
+              </template>
+            </pv-column>
+            
+            <pv-column field="total_amount" :header="t('billing.vouchers_table.columns.total')">
+              <template #body="slotProps">
+                <span class="font-bold text-900">S/ {{ slotProps.data.total_amount.toLocaleString(undefined, {minimumFractionDigits: 2}) }}</span>
+              </template>
+            </pv-column>
+            
+            <pv-column field="status" :header="t('billing.vouchers_table.columns.status')">
+              <template #body="slotProps">
+                <pv-tag 
+                  :value="t('billing.status.' + slotProps.data.status)" 
+                  :severity="getStatusSeverity(slotProps.data.status)" 
+                  rounded 
+                  class="px-3 py-1"
+                />
+              </template>
+            </pv-column>
+            
+            <pv-column :header="t('billing.vouchers_table.columns.actions')">
+              <template #body>
+                <pv-button icon="pi pi-download" label="PDF" text class="p-0 pdf-btn flex flex-row-reverse align-items-center gap-1" />
               </template>
             </pv-column>
           </pv-data-table>
@@ -710,6 +817,18 @@ const getStatusSeverity = (status) => {
 .pdf-btn:hover, .checkout-btn:hover {
   text-decoration: underline !important;
   opacity: 0.8;
+}
+
+.view-all-btn {
+  font-family: 'Arimo', sans-serif !important;
+  font-weight: 700 !important;
+  color: #0071EB !important;
+  font-size: 0.9rem !important;
+  padding: 0.5rem 1rem !important;
+}
+
+.view-all-btn:hover {
+  text-decoration: underline !important;
 }
 
 :deep(.p-tag.p-tag-success) {

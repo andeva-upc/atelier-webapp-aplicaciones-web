@@ -217,6 +217,8 @@
   "billing": {
     "title": "Facturación",
     "subtitle": "Gestión comercial y financiera del taller",
+    "title_recent": "Cotizaciones Recientes",
+    "view_all": "Ver todas",
     "new_quote": "Nueva cotización",
     "cards": {
       "total_income": "Ingresos totales",
@@ -226,7 +228,8 @@
     },
     "tabs": {
       "income_expenses": "Ingresos y gastos",
-      "quotes": "Cotizaciones"
+      "quotes": "Cotizaciones",
+      "vouchers": "Comprobantes"
     },
     "chart": {
       "title": "Resumen financiero mensual",
@@ -258,11 +261,22 @@
         "actions": "Acciones"
       }
     },
+    "vouchers_table": {
+      "columns": {
+        "id": "Nº de Comprobante",
+        "client": "Cliente",
+        "date": "Mes",
+        "total": "Total",
+        "status": "Estado",
+        "actions": "Acciones"
+      }
+    },
     "status": {
       "approved": "Aprobada",
       "pending": "Pendiente",
       "sent": "Enviada",
-      "draft": "Borrador"
+      "draft": "Borrador",
+      "paid": "Pagado"
     },
     "quote_form": {
       "title": "Nueva cotización",

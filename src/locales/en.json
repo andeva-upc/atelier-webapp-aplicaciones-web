@@ -217,6 +217,8 @@
   "billing": {
     "title": "Billing",
     "subtitle": "Commercial and financial management of the workshop",
+    "title_recent": "Recent Quotes",
+    "view_all": "View all",
     "new_quote": "New quote",
     "cards": {
       "total_income": "Total income",
@@ -226,7 +228,8 @@
     },
     "tabs": {
       "income_expenses": "Income & Expenses",
-      "quotes": "Quotes"
+      "quotes": "Quotes",
+      "vouchers": "Vouchers"
     },
     "chart": {
       "title": "Monthly Financial Summary",
@@ -258,11 +261,22 @@
         "actions": "Actions"
       }
     },
+    "vouchers_table": {
+      "columns": {
+        "id": "Voucher Number",
+        "client": "Client",
+        "date": "Month",
+        "total": "Total",
+        "status": "Status",
+        "actions": "Actions"
+      }
+    },
     "status": {
       "approved": "Approved",
       "pending": "Pending",
       "sent": "Sent",
-      "draft": "Draft"
+      "draft": "Draft",
+      "paid": "Paid"
     },
     "quote_form": {
       "title": "New Quote",

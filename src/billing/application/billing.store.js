@@ -6,6 +6,7 @@ export const useBillingStore = defineStore('billing', {
   state: () => ({
     quotes: [],
     vouchers: [],
+    workOrders: [],
     products: [],
     vehicles: [],
     isLoading: false,
@@ -26,21 +27,24 @@ export const useBillingStore = defineStore('billing', {
       this.isLoading = true;
       this.error = null;
       try {
-        const [quotesRes, vouchersRes, productsRes, customersRes, vehiclesRes] = await Promise.all([
+        const [quotesRes, vouchersRes, productsRes, customersRes, vehiclesRes, workOrdersRes] = await Promise.all([
           axios.get(`${environment.apiBaseUrl}/quotes`),
           axios.get(`${environment.apiBaseUrl}/vouchers`),
           axios.get(`${environment.apiBaseUrl}/products`),
           axios.get(`${environment.apiBaseUrl}/customers`),
-          axios.get(`${environment.apiBaseUrl}/vehicles`)
+          axios.get(`${environment.apiBaseUrl}/vehicles`),
+          axios.get(`${environment.apiBaseUrl}/work_orders`)
         ]);
 
-        const customers = customersRes.data;
-        const vehicles = vehiclesRes.data;
+        const customers = customersRes.data || [];
+        const vehicles = vehiclesRes.data || [];
+        const workOrders = workOrdersRes.data || [];
         this.vehicles = vehicles;
+        this.workOrders = workOrders;
 
-        this.quotes = quotesRes.data.map(quote => this._processQuote(quote, customers, vehicles));
-        this.vouchers = vouchersRes.data;
-        this.products = productsRes.data;
+        this.quotes = (quotesRes.data || []).map(quote => this._processQuote(quote, customers, vehicles));
+        this.vouchers = (vouchersRes.data || []).map(voucher => this._processVoucher(voucher, workOrders, customers));
+        this.products = productsRes.data || [];
       } catch (err) {
         this.error = err.message || 'Error fetching billing data';
         console.error('[BillingStore] Error:', err);
@@ -81,6 +85,34 @@ export const useBillingStore = defineStore('billing', {
       };
     },
 
+    _processVoucher(voucher, workOrders = [], customers = []) {
+      if (!voucher) return {};
+      
+      const workOrder = workOrders.find(wo => wo.id === voucher.work_order_id);
+      const customer = customers.find(c => c.id === (workOrder?.customer_id || voucher.customer_id));
+      
+      const customerName = customer?.full_name || voucher.customer_name || 'N/A';
+      
+      // Formatting date to DD/MM/YYYY
+      const displayDate = voucher.created_at 
+        ? new Date(voucher.created_at).toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' })
+        : 'N/A';
+
+      // Generate a display ID like B001-00001
+      const rawId = String(voucher.id || '');
+      const displayId = rawId.startsWith('vo-old') 
+        ? `B001-${rawId.split('-').pop().padStart(5, '0')}`
+        : (rawId.startsWith('vo') ? `B001-${rawId.replace('vo', '').padStart(5, '0')}` : `B001-${rawId.padStart(5, '0')}`);
+
+      return {
+        ...voucher,
+        displayId,
+        customerName,
+        displayDate,
+        status: (voucher.sunat_status === 'ACCEPTED' || voucher.status === 'paid') ? 'paid' : 'pending'
+      };
+    },
+
     async saveQuote(quoteData) {
       this.isLoading = true;
       try {
@@ -113,7 +145,7 @@ export const useBillingStore = defineStore('billing', {
         // Actualizar localmente el estado de la cotización si corresponde
         const quote = this.quotes.find(q => q.id === paymentData.quoteId);
         if (quote) {
-          quote.status = 'APPROVED';
+          quote.status = 'approved';
         }
         
         return response.data;
