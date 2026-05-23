@@ -1,530 +1,570 @@
--- ====================================================================================
--- Script DDL Enterprise para el sistema Atelier (MySQL)
--- Optimizado para Spring Boot, Hibernate, Alta Escalabilidad y Auditoría Estricta
--- ====================================================================================
+CREATE TABLE appointments
+(
+    id               CHAR(36)    NOT NULL,
+    branch_id        CHAR(36)    NOT NULL,
+    customer_id      CHAR(36)    NOT NULL,
+    vehicle_id       CHAR(36)    NOT NULL,
+    appointment_date DATETIME    NOT NULL,
+    status           VARCHAR(20) NOT NULL DEFAULT 'SCHEDULED' COMMENT 'Enum: SCHEDULED, COMPLETED, CANCELLED',
+    version          BIGINT      NULL     DEFAULT 0,
+    created_at       TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP   NULL    ,
+    PRIMARY KEY (id)
+);
 
-CREATE DATABASE IF NOT EXISTS atelier_db
-CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE TABLE branches
+(
+    id                CHAR(36)     NOT NULL,
+    workshop_id       CHAR(36)     NOT NULL,
+    branch_name       VARCHAR(100) NOT NULL,
+    branch_address    VARCHAR(200) NULL    ,
+    branch_phone      VARCHAR(50)  NULL    ,
+    hourly_capacity   INT          NOT NULL DEFAULT 3,
+    subscription_plan VARCHAR(20)  NOT NULL,
+    version           BIGINT       NOT NULL DEFAULT 0,
+    created_at        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at        TIMESTAMP    NULL    ,
+    deleted_at        TIMESTAMP    NULL    ,
+    created_by        CHAR(36)     NULL    ,
+    updated_by        CHAR(36)     NULL    ,
+    PRIMARY KEY (id)
+);
 
-USE atelier_db;
+CREATE TABLE categories
+(
+    id            CHAR(36)    NOT NULL,
+    category_name VARCHAR(50) NOT NULL,
+    PRIMARY KEY (id)
+);
 
--- ==========================================
--- 1. BOUNDED CONTEXT: CORE (Identity & Multi-Tenancy)
--- ==========================================
+CREATE TABLE customer_profiles
+(
+    id            CHAR(36)    NOT NULL,
+    user_id       CHAR(36)    NOT NULL,
+    first_name    VARCHAR(50) NULL    ,
+    last_name     VARCHAR(50) NULL    ,
+    is_corporate  BOOLEAN     NOT NULL,
+    business_name VARCHAR(50) NULL    ,
+    created_by    CHAR(36)    NULL    ,
+    PRIMARY KEY (id)
+);
 
-CREATE TABLE workshops (
-    id CHAR(36) PRIMARY KEY COMMENT 'UUID v4/v7',
-    tax_id VARCHAR(50) NOT NULL UNIQUE COMMENT 'RUC o Identificador Fiscal (US001 exige UNIQUE)',
-    business_name VARCHAR(150) NOT NULL,
-    subscription_plan VARCHAR(20) NOT NULL COMMENT 'Enum: LITE, PRO, MAX',
-    is_active BOOLEAN NOT NULL DEFAULT TRUE,
-    
-    version BIGINT NOT NULL DEFAULT 0 COMMENT 'JPA Optimistic Locking',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL COMMENT 'Soft Delete',
-    created_by CHAR(36) NULL,
-    updated_by CHAR(36) NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Entidad Raíz Multi-Tenant';
+CREATE TABLE customer_registration
+(
+    id              CHAR(36)   NOT NULL,
+    branch_id       CHAR(36)   NOT NULL,
+    customer_id     CHAR(36)   NOT NULL,
+    registered_at   TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    unregistered_at TIMESTAMP  NULL    ,
+    PRIMARY KEY (id)
+);
 
-CREATE TABLE branches (
-    id CHAR(36) PRIMARY KEY COMMENT 'UUID v4/v7',
-    workshop_id CHAR(36) NOT NULL COMMENT 'Tenant al que pertenece la sede',
-    name VARCHAR(100) NOT NULL COMMENT 'Nombre de la sede (ej: Miraflores, San Isidro)',
-    address VARCHAR(200) NULL,
-    phone VARCHAR(50) NULL,
-    
-    version BIGINT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL,
-    created_by CHAR(36) NULL,
-    updated_by CHAR(36) NULL,
-    CONSTRAINT fk_branches_workshop FOREIGN KEY (workshop_id) REFERENCES workshops(id) ON DELETE RESTRICT,
-    UNIQUE (workshop_id, name)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Sedes o Sucursales de un taller';
+CREATE TABLE dtc_alerts
+(
+    id                    CHAR(36)     NOT NULL,
+    telemetry_snapshot_id CHAR(36)     NOT NULL,
+    dtc_code              VARCHAR(10)  NOT NULL,
+    description           VARCHAR(255) NOT NULL,
+    severity              VARCHAR(20)  NOT NULL COMMENT 'Enum: LOW, MEDIUM, HIGH, CRITICAL',
+    created_at            TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    version               BIGINT       NOT NULL DEFAULT 0,
+    branch_id             CHAR(36)     NULL    ,
+    PRIMARY KEY (id)
+);
 
-CREATE TABLE users (
-    id CHAR(36) PRIMARY KEY,
-    workshop_id CHAR(36) NOT NULL COMMENT 'Tenant al que pertenece',
-    branch_id CHAR(36) NULL COMMENT 'Sede asignada (NULL para administradores corporativos)',
-    email VARCHAR(150) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NULL COMMENT 'Null para cuentas externas (OAuth2)',
-    google_id VARCHAR(255) UNIQUE NULL,
-    role VARCHAR(20) NOT NULL COMMENT 'Enum: ADMIN, MECHANIC, CUSTOMER, RECEPTIONIST',
-    specialty VARCHAR(30) NULL COMMENT 'Enum: GENERAL_MECHANIC, AUTOMOTIVE_ELECTRONIC, BODY_AND_PAINT, DIAGNOSTICIAN. Null for non-mechanics',
-    
-    version BIGINT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL,
-    created_by CHAR(36) NULL,
-    updated_by CHAR(36) NULL,
-    CONSTRAINT fk_users_workshop FOREIGN KEY (workshop_id) REFERENCES workshops(id) ON DELETE RESTRICT,
-    CONSTRAINT fk_users_branch FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE employee_profiles
+(
+    id         CHAR(36)    NOT NULL,
+    user_id    CHAR(36)    NOT NULL,
+    first_name VARCHAR(50) NOT NULL,
+    last_name  VARCHAR(50) NOT NULL,
+    created_by CHAR(36)    NULL    ,
+    PRIMARY KEY (id)
+);
 
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_tenant ON users(workshop_id, role);
+CREATE TABLE employee_registration
+(
+    id              CHAR(36)      NOT NULL,
+    branch_id       CHAR(36)      NOT NULL,
+    employee_id     CHAR(36)      NOT NULL,
+    specialty_id    CHAR(36)      NOT NULL,
+    salary          DECIMAL(10,2) NOT NULL,
+    registered_at   TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    unregistered_at TIMESTAMP     NULL    ,
+    PRIMARY KEY (id)
+);
 
--- Tabla para tokens de recuperación de contraseña (US006)
-CREATE TABLE password_recovery_tokens (
-    id CHAR(36) PRIMARY KEY,
-    user_id CHAR(36) NOT NULL,
-    token VARCHAR(100) NOT NULL UNIQUE,
-    expires_at DATETIME NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_recovery_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE inventory_batches
+(
+    id                 CHAR(36)      NOT NULL,
+    product_id         CHAR(36)      NOT NULL,
+    initial_quantity   INT           NOT NULL,
+    available_quantity INT           NOT NULL,
+    acquisition_cost   DECIMAL(10,2) NOT NULL,
+    entry_date         TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    branch_id          CHAR(36)      NOT NULL,
+    PRIMARY KEY (id)
+);
 
--- ==========================================
--- 2. BOUNDED CONTEXT: FLEET (Fleet Management)
--- ==========================================
+CREATE TABLE obd2_device_vehicle_registration
+(
+    id              CHAR(36)  NOT NULL,
+    obd2_id         CHAR(36)  NOT NULL,
+    vehicle_id      CHAR(36)  NOT NULL,
+    registered_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    unregistered_at TIMESTAMP NULL    ,
+    branch_id       CHAR(36)  NOT NULL,
+    PRIMARY KEY (id)
+);
 
-CREATE TABLE customers (
-    id CHAR(36) PRIMARY KEY,
-    workshop_id CHAR(36) NOT NULL COMMENT 'Aislamiento Tenant',
-    document_number VARCHAR(50) NOT NULL,
-    document_type VARCHAR(20) NOT NULL COMMENT 'Enum: DNI, RUC, CE, PASSPORT',
-    full_name VARCHAR(200) NOT NULL,
-    email VARCHAR(150) NULL COMMENT 'Correo electrónico (US011 exige correo)',
-    phone VARCHAR(50),
-    
-    version BIGINT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL,
-    created_by CHAR(36) NULL,
-    updated_by CHAR(36) NULL,
-    CONSTRAINT fk_customers_workshop FOREIGN KEY (workshop_id) REFERENCES workshops(id) ON DELETE RESTRICT,
-    UNIQUE (workshop_id, document_type, document_number)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Clientes gestionados por un taller';
+CREATE TABLE obd2_devices
+(
+    id          CHAR(36)    NOT NULL,
+    branch_id   CHAR(36)    NOT NULL,
+    mac_address VARCHAR(17) NOT NULL,
+    last_ping   DATETIME    NULL    ,
+    status      VARCHAR(20) NOT NULL DEFAULT 'INACTIVE' COMMENT 'Enum: ACTIVE, INACTIVE',
+    version     BIGINT      NOT NULL DEFAULT 0,
+    created_at  TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP   NULL    ,
+    deleted_at  TIMESTAMP   NULL    ,
+    created_by  CHAR(36)    NOT NULL,
+    updated_by  CHAR(36)    NULL    ,
+    PRIMARY KEY (id)
+);
 
-CREATE INDEX idx_customers_tenant ON customers(workshop_id, created_at);
+ALTER TABLE obd2_devices
+    ADD CONSTRAINT UQ_mac_address UNIQUE (mac_address);
 
-CREATE TABLE vehicles (
-    id CHAR(36) PRIMARY KEY,
-    workshop_id CHAR(36) NOT NULL COMMENT 'Aislamiento Tenant para vehiculos',
-    customer_id CHAR(36) NULL COMMENT 'Propietario principal del vehículo (puede ser nulo si se mapea en customer_vehicles)',
-    plate_number VARCHAR(20) NOT NULL COMMENT 'Placa (Homologado con db.json)',
-    brand VARCHAR(50) NOT NULL COMMENT 'Marca del vehículo (Agregado)',
-    model VARCHAR(50) NOT NULL COMMENT 'Modelo del vehículo (Agregado)',
-    year INT NOT NULL COMMENT 'Año de fabricación (Agregado)',
-    vin VARCHAR(50) NOT NULL,
-    current_mileage INT NOT NULL DEFAULT 0,
-    usage_type VARCHAR(30) NOT NULL DEFAULT 'PARTICULAR' COMMENT 'Enum: PARTICULAR, TAXI_UBER, HEAVY_DUTY',
-    
-    version BIGINT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL,
-    created_by CHAR(36) NULL,
-    updated_by CHAR(36) NULL,
-    CONSTRAINT fk_vehicles_workshop FOREIGN KEY (workshop_id) REFERENCES workshops(id) ON DELETE RESTRICT,
-    CONSTRAINT fk_vehicles_customer FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE RESTRICT,
-    CONSTRAINT uq_vehicles_plate UNIQUE (workshop_id, plate_number),
-    CONSTRAINT uq_vehicles_vin UNIQUE (workshop_id, vin),
-    CONSTRAINT chk_vehicle_mileage CHECK (current_mileage >= 0)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE owner_profiles
+(
+    id         CHAR(36)    NOT NULL,
+    user_id    CHAR(36)    NOT NULL,
+    first_name VARCHAR(50) NOT NULL,
+    last_name  VARCHAR(50) NOT NULL,
+    PRIMARY KEY (id)
+);
 
-CREATE INDEX idx_vehicles_plate ON vehicles(plate_number);
+CREATE TABLE password_recovery_tokens
+(
+    id         CHAR(36)     NOT NULL,
+    user_id    CHAR(36)     NOT NULL,
+    token      VARCHAR(100) NOT NULL,
+    expires_at DATETIME     NOT NULL,
+    created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
 
--- Tabla intermedia para vehículos compartidos o multi-conductor (Caso Especial G)
-CREATE TABLE customer_vehicles (
-    customer_id CHAR(36) NOT NULL,
-    vehicle_id CHAR(36) NOT NULL,
-    association_type VARCHAR(30) NOT NULL DEFAULT 'OWNER' COMMENT 'Enum: OWNER, AUTHORIZED_DRIVER, FAMILY_MEMBER',
-    
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL,
-    PRIMARY KEY (customer_id, vehicle_id),
-    CONSTRAINT fk_cust_veh_customer FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE,
-    CONSTRAINT fk_cust_veh_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+ALTER TABLE password_recovery_tokens
+    ADD CONSTRAINT UQ_token UNIQUE (token);
 
--- Tabla para lockers / bahías físicas de trabajo en taller (US013)
-CREATE TABLE work_bays (
-    id CHAR(36) PRIMARY KEY,
-    workshop_id CHAR(36) NOT NULL,
-    branch_id CHAR(36) NOT NULL COMMENT 'Sede física donde esta la bahia',
-    name VARCHAR(50) NOT NULL,
-    status VARCHAR(20) NOT NULL DEFAULT 'VACANT' COMMENT 'Enum: VACANT, OCCUPIED',
-    vehicle_id CHAR(36) NULL,
-    
-    version BIGINT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL,
-    CONSTRAINT fk_bay_workshop FOREIGN KEY (workshop_id) REFERENCES workshops(id) ON DELETE RESTRICT,
-    CONSTRAINT fk_bay_branch FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE RESTRICT,
-    CONSTRAINT fk_bay_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE SET NULL,
-    CONSTRAINT uq_bay_name_branch UNIQUE (branch_id, name)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE payments
+(
+    id         CHAR(36)      NOT NULL,
+    voucher_id CHAR(36)      NOT NULL,
+    amount     DECIMAL(10,2) NOT NULL,
+    currency   VARCHAR(3)    NOT NULL DEFAULT 'PEN',
+    method     VARCHAR(20)   NOT NULL COMMENT 'Enum: CASH, CREDIT_CARD, DEBIT_CARD, BANK_TRANSFER',
+    paid_at    TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    version    BIGINT        NOT NULL DEFAULT 0,
+    branch_id  CHAR(36)      NOT NULL,
+    PRIMARY KEY (id)
+);
 
--- Tabla para agendamiento y reprogramación de citas (US024, US025)
-CREATE TABLE appointments (
-    id CHAR(36) PRIMARY KEY,
-    workshop_id CHAR(36) NOT NULL,
-    branch_id CHAR(36) NOT NULL COMMENT 'Sede física donde es la cita',
-    customer_id CHAR(36) NULL COMMENT 'Null para pre-registros pendientes de aprobacion',
-    vehicle_id CHAR(36) NULL COMMENT 'Null para pre-registros pendientes de aprobacion',
-    appointment_date DATETIME NOT NULL,
-    status VARCHAR(20) NOT NULL DEFAULT 'SCHEDULED' COMMENT 'Enum: PENDING_APPROVAL, SCHEDULED, COMPLETED, CANCELLED',
-    
-    -- Campos para auto-registro online (Borrador temporal)
-    pre_registered_full_name VARCHAR(200) NULL,
-    pre_registered_document_type VARCHAR(20) NULL COMMENT 'Enum: DNI, RUC, CE, PASSPORT',
-    pre_registered_document_number VARCHAR(50) NULL,
-    pre_registered_email VARCHAR(150) NULL,
-    pre_registered_phone VARCHAR(50) NULL,
-    pre_registered_vehicle_plate VARCHAR(20) NULL,
-    pre_registered_vehicle_brand_model VARCHAR(100) NULL,
-    
-    version BIGINT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL,
-    CONSTRAINT fk_app_workshop FOREIGN KEY (workshop_id) REFERENCES workshops(id) ON DELETE RESTRICT,
-    CONSTRAINT fk_app_branch FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE RESTRICT,
-    CONSTRAINT fk_app_customer FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE RESTRICT,
-    CONSTRAINT fk_app_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE products
+(
+    id                    CHAR(36)      NOT NULL,
+    category_id           CHAR(36)      NOT NULL,
+    branch_id             CHAR(36)      NOT NULL,
+    product_name          VARCHAR(50)   NOT NULL,
+    sku                   VARCHAR(50)   NOT NULL,
+    description           TEXT          NULL    ,
+    current_selling_price DECIMAL(10,2) NOT NULL,
+    current_stock         INT           NOT NULL DEFAULT 0,
+    minimum_stock         INT           NOT NULL,
+    version               BIGINT        NOT NULL DEFAULT 0,
+    created_at            TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at            TIMESTAMP     NULL    ,
+    deleted_at            TIMESTAMP     NULL    ,
+    created_by            CHAR(36)      NOT NULL,
+    updated_by            CHAR(36)      NULL    ,
+    PRIMARY KEY (id)
+);
 
--- ==========================================
--- 3. BOUNDED CONTEXT: IOT (Hardware y Telemetría)
--- ==========================================
+CREATE TABLE quotes
+(
+    id                  CHAR(36)      NOT NULL,
+    work_order_id       CHAR(36)      NOT NULL,
+    subtotal_amount     DECIMAL(10,2) NOT NULL,
+    discount_percentage DECIMAL(5,2)  NULL    ,
+    total_amount        DECIMAL(10,2) NOT NULL,
+    version             BIGINT        NOT NULL DEFAULT 0,
+    status              VARCHAR(20)   NOT NULL DEFAULT 'DRAFT' COMMENT 'Enum: DRAFT, APPROVED, CANCELLED',
+    created_at          TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at          TIMESTAMP     NULL    ,
+    deleted_at          TIMESTAMP     NULL    ,
+    created_by          CHAR(36)      NOT NULL,
+    updated_by          CHAR(36)      NULL    ,
+    branch_id           CHAR(36)      NOT NULL,
+    PRIMARY KEY (id)
+);
 
-CREATE TABLE obd2_devices (
-    id CHAR(36) PRIMARY KEY,
-    mac_address VARCHAR(17) NOT NULL UNIQUE,
-    vehicle_id CHAR(36),
-    last_ping DATETIME,
-    status VARCHAR(20) NOT NULL DEFAULT 'INACTIVE' COMMENT 'Enum: ACTIVE, INACTIVE',
-    
-    version BIGINT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL,
-    created_by CHAR(36) NULL,
-    updated_by CHAR(36) NULL,
-    CONSTRAINT fk_obd2_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE services
+(
+    id            CHAR(36)      NOT NULL,
+    service_name  VARCHAR(50)   NOT NULL,
+    service_price DECIMAL(10,2) NOT NULL,
+    branch_id     CHAR(36)      NOT NULL,
+    PRIMARY KEY (id)
+);
 
-CREATE INDEX idx_obd2_mac ON obd2_devices(mac_address);
+CREATE TABLE specialties
+(
+    id             CHAR(36)    NOT NULL,
+    specialty_name VARCHAR(50) NOT NULL,
+    PRIMARY KEY (id)
+);
 
-CREATE TABLE vehicle_dtc_alerts (
-    id CHAR(36) PRIMARY KEY,
-    vehicle_id CHAR(36) NOT NULL,
-    dtc_code VARCHAR(10) NOT NULL,
-    description VARCHAR(255) NOT NULL,
-    severity VARCHAR(20) NOT NULL COMMENT 'Enum: LOW, MEDIUM, HIGH, CRITICAL',
-    is_active BOOLEAN NOT NULL DEFAULT TRUE,
-    
-    version BIGINT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL,
-    CONSTRAINT fk_dtc_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE telemetry_snapshots
+(
+    id                                  CHAR(36)  NOT NULL,
+    obd2_device_vehicle_registration_id CHAR(36)  NOT NULL,
+    branch_id                           CHAR(36)  NOT NULL,
+    rpm                                 INT       NOT NULL,
+    temp                                INT       NOT NULL,
+    speed_kmh                           DOUBLE    NULL    ,
+    odometer_km                         INT       NULL    ,
+    fuel_level_percent                  DOUBLE    NULL    ,
+    created_at                          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
 
-CREATE INDEX idx_dtc_vehicle_active ON vehicle_dtc_alerts(vehicle_id, is_active);
+CREATE TABLE users
+(
+    id              CHAR(36)     NOT NULL,
+    email           VARCHAR(150) NOT NULL,
+    password_hash   VARCHAR(255) NOT NULL,
+    google_id       VARCHAR(255) NULL    ,
+    document_type   VARCHAR(20)  NOT NULL COMMENT 'Enum: DNI, RUC, CE, PASSPORT',
+    document_number VARCHAR(50)  NOT NULL,
+    phone           CHAR(9)      NOT NULL,
+    created_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP    NULL    ,
+    deleted_at      TIMESTAMP    NULL    ,
+    version         BIGINT       NOT NULL DEFAULT 0,
+    PRIMARY KEY (id)
+);
 
--- Tabla de Ingesta Masiva: Simplificada con clave primaria simple para compatibilidad perfecta con JPA/Hibernate y EF Core.
-CREATE TABLE telemetry_snapshots (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    device_id CHAR(36) NOT NULL,
-    timestamp DATETIME NOT NULL,
-    rpm INT NOT NULL,
-    temp DOUBLE NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_telemetry_device FOREIGN KEY (device_id) REFERENCES obd2_devices(id) ON DELETE CASCADE,
-    CONSTRAINT chk_telemetry_rpm CHECK (rpm >= 0)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Eventos IoT Inmutables';
+ALTER TABLE users
+    ADD CONSTRAINT UQ_email UNIQUE (email);
 
-CREATE INDEX idx_telemetry_device_time ON telemetry_snapshots(device_id, timestamp);
+ALTER TABLE users
+    ADD CONSTRAINT UQ_password_hash UNIQUE (password_hash);
 
--- ==========================================
--- 4. BOUNDED CONTEXT: OPERATIONS (Work Orders)
--- ==========================================
+ALTER TABLE users
+    ADD CONSTRAINT UQ_google_id UNIQUE (google_id);
 
-CREATE TABLE work_orders (
-    id CHAR(36) PRIMARY KEY,
-    workshop_id CHAR(36) NOT NULL COMMENT 'Aislamiento Tenant',
-    branch_id CHAR(36) NOT NULL COMMENT 'Sede física donde se hace el servicio',
-    internal_number INT NOT NULL,
-    customer_id CHAR(36) NOT NULL COMMENT 'Cliente (dueño) que autoriza la orden de trabajo',
-    billing_customer_id CHAR(36) NULL COMMENT 'Cliente pagador real (ej: aseguradora para siniestros) (Caso Especial F)',
-    vehicle_id CHAR(36) NOT NULL,
-    assigned_mechanic_id CHAR(36) NOT NULL,
-    driver_name VARCHAR(150) NULL,
-    driver_phone VARCHAR(50) NULL,
-    current_mileage INT NOT NULL DEFAULT 0 COMMENT 'Kilometraje al momento de recepción (US032)',
-    diagnosis TEXT NULL,
-    status VARCHAR(50) NOT NULL DEFAULT 'DRAFT' COMMENT 'Enum: DRAFT, DIAGNOSING, IN_PROGRESS, COMPLETED, INVOICED',
-    
-    version BIGINT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL,
-    created_by CHAR(36) NULL,
-    updated_by CHAR(36) NULL,
-    CONSTRAINT fk_wo_workshop FOREIGN KEY (workshop_id) REFERENCES workshops(id) ON DELETE RESTRICT,
-    CONSTRAINT fk_wo_branch FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE RESTRICT,
-    CONSTRAINT fk_wo_customer FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE RESTRICT,
-    CONSTRAINT fk_wo_billing_customer FOREIGN KEY (billing_customer_id) REFERENCES customers(id) ON DELETE RESTRICT,
-    CONSTRAINT fk_wo_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE RESTRICT,
-    CONSTRAINT fk_wo_mechanic FOREIGN KEY (assigned_mechanic_id) REFERENCES users(id) ON DELETE RESTRICT,
-    CONSTRAINT chk_wo_number CHECK (internal_number > 0),
-    CONSTRAINT chk_wo_mileage CHECK (current_mileage >= 0)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+ALTER TABLE users
+    ADD CONSTRAINT UQ_document_number UNIQUE (document_number);
 
-CREATE INDEX idx_wo_tenant_status ON work_orders(workshop_id, status);
-CREATE INDEX idx_wo_mechanic ON work_orders(assigned_mechanic_id, status);
+ALTER TABLE users
+    ADD CONSTRAINT UQ_phone UNIQUE (phone);
 
-CREATE TABLE work_order_tasks (
-    id CHAR(36) PRIMARY KEY,
-    work_order_id CHAR(36) NOT NULL,
-    description TEXT NOT NULL,
-    estimated_hours DECIMAL(5,2) NOT NULL,
-    unit_price DECIMAL(10,2) NOT NULL DEFAULT 0.00 COMMENT 'Precio de mano de obra por hora o por tarea',
-    status VARCHAR(20) NOT NULL DEFAULT 'PENDING' COMMENT 'Enum: PENDING, DOING, DONE',
-    
-    version BIGINT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL,
-    created_by CHAR(36) NULL,
-    updated_by CHAR(36) NULL,
-    CONSTRAINT fk_task_wo FOREIGN KEY (work_order_id) REFERENCES work_orders(id) ON DELETE RESTRICT,
-    CONSTRAINT chk_task_hours CHECK (estimated_hours > 0),
-    CONSTRAINT chk_task_price CHECK (unit_price >= 0)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE vehicle_models
+(
+    id    CHAR(36)    NOT NULL,
+    brand VARCHAR(50) NOT NULL,
+    model VARCHAR(50) NOT NULL,
+    PRIMARY KEY (id)
+);
 
--- Tabla de Cotizaciones Digitales (US026, US027)
-CREATE TABLE quotes (
-    id CHAR(36) PRIMARY KEY,
-    workshop_id CHAR(36) NOT NULL,
-    customer_id CHAR(36) NOT NULL,
-    vehicle_id CHAR(36) NOT NULL,
-    description TEXT NULL,
-    currency VARCHAR(3) NOT NULL DEFAULT 'PEN',
-    subtotal_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-    discount_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00 COMMENT 'Monto de descuento aplicado (US029)',
-    tax_percentage DECIMAL(5,2) NOT NULL DEFAULT 18.00,
-    total_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-    
-    version BIGINT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL,
-    CONSTRAINT fk_quote_workshop FOREIGN KEY (workshop_id) REFERENCES workshops(id) ON DELETE RESTRICT,
-    CONSTRAINT fk_quote_customer FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE RESTRICT,
-    CONSTRAINT fk_quote_vehicle FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE vehicles
+(
+    id               CHAR(36)    NOT NULL,
+    user_id          CHAR(36)    NOT NULL,
+    vehicle_model_id CHAR(36)    NOT NULL,
+    plate_number     VARCHAR(20) NOT NULL,
+    year             INT         NOT NULL,
+    vin              VARCHAR(50) NOT NULL,
+    current_mileage  INT         NOT NULL DEFAULT 0,
+    created_at       TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP   NULL     DEFAULT CURRENT_TIMESTAMP,
+    deleted_at       TIMESTAMP   NULL    ,
+    PRIMARY KEY (id)
+);
 
--- Tabla de Detalle de Cotizaciones (US026)
-CREATE TABLE quote_items (
-    id CHAR(36) PRIMARY KEY,
-    quote_id CHAR(36) NOT NULL,
-    item_type VARCHAR(20) NOT NULL COMMENT 'Enum: PRODUCT, SERVICE',
-    reference_id CHAR(36) NULL COMMENT 'ID del producto o tarea base',
-    description VARCHAR(255) NOT NULL,
-    quantity DECIMAL(10,2) NOT NULL,
-    unit_price DECIMAL(10,2) NOT NULL,
-    total_price DECIMAL(10,2) NOT NULL,
-    
-    CONSTRAINT fk_qi_quote FOREIGN KEY (quote_id) REFERENCES quotes(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+ALTER TABLE vehicles
+    ADD CONSTRAINT UQ_plate_number UNIQUE (plate_number);
 
--- ==========================================
--- 5. BOUNDED CONTEXT: INVENTORY (Warehouse)
--- ==========================================
+CREATE TABLE vouchers
+(
+    id              CHAR(36)       NOT NULL,
+    quote_id        CHAR(36)       NOT NULL,
+    voucher_number  VARCHAR(50)    NOT NULL,
+    subtotal_amount DECIMAL(10,2)  NOT NULL,
+    total_amount    DECIMAL(10,2)  NOT NULL,
+    type            VARCHAR(20)    NOT NULL COMMENT 'Enum: INVOICE, RECEIPT, CREDIT_NOTE',
+    status          VARCHAR(20)    NOT NULL DEFAULT 'PENDING' COMMENT 'Enum: PENDING, PAID',
+    version         BIGINT         NOT NULL DEFAULT 0,
+    created_at      TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP      NULL    ,
+    deleted_at      TIMESTAMP      NULL    ,
+    created_by      CHAR(36)       NOT NULL,
+    updated_by      CHAR(36)       NULL    ,
+    currency        CHAR(3)        NOT NULL DEFAULT 'PEN',
+    branch_id       CHAR(36)       NOT NULL,
+    PRIMARY KEY (id)
+);
 
-CREATE TABLE products (
-    id CHAR(36) PRIMARY KEY,
-    workshop_id CHAR(36) NOT NULL COMMENT 'Aislamiento Tenant',
-    sku VARCHAR(50) NOT NULL,
-    name VARCHAR(150) NOT NULL,
-    category VARCHAR(50) NULL COMMENT 'Categoría de repuesto (US017)',
-    description TEXT,
-    unit_price DECIMAL(10,2) NOT NULL DEFAULT 0.00 COMMENT 'Precio de venta al público (US026)',
-    unit_cost DECIMAL(10,2) NOT NULL DEFAULT 0.00 COMMENT 'Costo de adquisición para calcular rentabilidad (US030)',
-    current_stock INT NOT NULL DEFAULT 0,
-    minimum_stock INT NOT NULL DEFAULT 0 COMMENT 'Stock mínimo para alertas (US010)',
-    
-    version BIGINT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL,
-    created_by CHAR(36) NULL,
-    updated_by CHAR(36) NULL,
-    CONSTRAINT fk_products_workshop FOREIGN KEY (workshop_id) REFERENCES workshops(id) ON DELETE RESTRICT,
-    CONSTRAINT chk_product_stock CHECK (current_stock >= 0),
-    CONSTRAINT chk_product_price CHECK (unit_price >= 0),
-    CONSTRAINT chk_product_cost CHECK (unit_cost >= 0),
-    UNIQUE (workshop_id, sku)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE work_order_task_products
+(
+    work_order_task_id CHAR(36)      NOT NULL,
+    product_id         CHAR(36)      NOT NULL,
+    quantity           INT           NOT NULL,
+    unit_price         DECIMAL(10,2) NOT NULL,
+    total_amount       DECIMAL(10,2) NOT NULL,
+    created_at         TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at         TIMESTAMP     NULL    ,
+    deleted_at         TIMESTAMP     NULL    ,
+    branch_id          CHAR(36)      NOT NULL,
+    PRIMARY KEY (work_order_task_id, product_id)
+) COMMENT 'the products usage in the work order task';
 
-CREATE INDEX idx_products_tenant ON products(workshop_id, sku);
+CREATE TABLE work_order_tasks
+(
+    id            CHAR(36)      NOT NULL,
+    work_order_id CHAR(36)      NOT NULL,
+    service_id    CHAR(36)      NOT NULL,
+    description   TEXT          NULL    ,
+    mechanic_id   CHAR(36)      NOT NULL,
+    total_price   DECIMAL(10,2) NOT NULL,
+    status        VARCHAR(20)   NOT NULL DEFAULT 'PENDING' COMMENT 'Enum: PENDING, DOING, DONE',
+    hours         DECIMAL(5,2)  NULL     COMMENT 'Real hours spent on the task',
+    started_at    DATETIME      NULL    ,
+    completed_at  DATETIME      NULL    ,
+    version       BIGINT        NULL     DEFAULT 0,
+    created_at    TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at    TIMESTAMP     NULL    ,
+    deleted_at    TIMESTAMP     NULL    ,
+    created_by    CHAR(36)      NOT NULL,
+    updated_by    CHAR(36)      NULL    ,
+    branch_id     CHAR(36)      NOT NULL,
+    PRIMARY KEY (id)
+);
 
-CREATE TABLE inventory_movements (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    product_id CHAR(36) NOT NULL,
-    movement_type VARCHAR(20) NOT NULL COMMENT 'Enum: INBOUND, OUTBOUND, ADJUSTMENT',
-    quantity INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_by CHAR(36) NULL COMMENT 'Usuario que registró el movimiento',
-    CONSTRAINT fk_movement_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Eventos inmutables de almacén';
+CREATE TABLE work_orders
+(
+    id              CHAR(36)    NOT NULL,
+    workbay_id      CHAR(36)    NOT NULL,
+    branch_id       CHAR(36)    NOT NULL,
+    internal_number INT         NOT NULL,
+    customer_id     CHAR(36)    NOT NULL,
+    vehicle_id      CHAR(36)    NOT NULL,
+    current_mileage INT         NOT NULL DEFAULT 0,
+    diagnosis       TEXT        NOT NULL,
+    status          VARCHAR(50) NOT NULL DEFAULT 'IN_PROGRESS' COMMENT 'Enum: IN_PROGRESS, COMPLETED, PAID',
+    version         BIGINT      NOT NULL DEFAULT 0,
+    created_at      TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP   NULL    ,
+    closed_at       DATETIME    NULL    ,
+    deleted_at      TIMESTAMP   NULL    ,
+    created_by      CHAR(36)    NOT NULL,
+    updated_by      CHAR(36)    NULL    ,
+    PRIMARY KEY (id)
+);
 
--- ==========================================
--- 6. BOUNDED CONTEXT: BILLING (Invoicing and Payments)
--- ==========================================
+CREATE TABLE workbays
+(
+    id              CHAR(36)    NOT NULL,
+    branch_id       CHAR(36)    NOT NULL,
+    status          VARCHAR(20) NOT NULL DEFAULT 'VACANT' COMMENT 'Enum: VACANT, OCCUPIED, NOT AVAILABLE',
+    version         BIGINT      NOT NULL DEFAULT 0,
+    internal_number INT         NOT NULL,
+    created_at      TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP   NULL    ,
+    deleted_at      TIMESTAMP   NULL    ,
+    PRIMARY KEY (id)
+);
 
-CREATE TABLE vouchers (
-    id CHAR(36) PRIMARY KEY,
-    workshop_id CHAR(36) NOT NULL COMMENT 'Aislamiento Tenant',
-    work_order_id CHAR(36) NOT NULL,
-    type VARCHAR(20) NOT NULL COMMENT 'Enum: INVOICE, RECEIPT, CREDIT_NOTE',
-    subtotal_amount DECIMAL(10,2) NOT NULL,
-    discount_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00 COMMENT 'Descuento aplicado (US029)',
-    tax_percentage DECIMAL(5,2) NOT NULL,
-    total_amount DECIMAL(10,2) NOT NULL,
-    currency VARCHAR(3) NOT NULL DEFAULT 'PEN',
-    sunat_status VARCHAR(20) NOT NULL DEFAULT 'PENDING' COMMENT 'Enum: PENDING, ACCEPTED, REJECTED',
-    
-    version BIGINT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL,
-    created_by CHAR(36) NULL,
-    updated_by CHAR(36) NULL,
-    CONSTRAINT fk_voucher_workshop FOREIGN KEY (workshop_id) REFERENCES workshops(id) ON DELETE RESTRICT,
-    CONSTRAINT fk_voucher_wo FOREIGN KEY (work_order_id) REFERENCES work_orders(id) ON DELETE RESTRICT,
-    CONSTRAINT chk_voucher_amounts CHECK (subtotal_amount >= 0 AND total_amount >= 0 AND tax_percentage >= 0)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE workshops
+(
+    id                      CHAR(36)     NOT NULL,
+    owner_id                CHAR(36)     NOT NULL,
+    mileage_interval_config INT          NULL     DEFAULT 1,
+    tax_id                  VARCHAR(50)  NOT NULL,
+    workshop_name           VARCHAR(50)  NOT NULL COMMENT 'RUC',
+    is_active               BOOLEAN      NOT NULL DEFAULT TRUE,
+    version                 BIGINT       NOT NULL DEFAULT 0,
+    created_at              TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at              TIMESTAMP    NULL    ,
+    deleted_at              TIMESTAMP    NULL    ,
+    PRIMARY KEY (id)
+);
 
--- Tabla de Detalle de Comprobantes (Reflejo de la US026 para facturación)
-CREATE TABLE voucher_items (
-    id CHAR(36) PRIMARY KEY,
-    voucher_id CHAR(36) NOT NULL,
-    item_type VARCHAR(20) NOT NULL,
-    reference_id CHAR(36) NULL,
-    description VARCHAR(255) NOT NULL,
-    quantity DECIMAL(10,2) NOT NULL,
-    unit_price DECIMAL(10,2) NOT NULL,
-    total_price DECIMAL(10,2) NOT NULL,
-    
-    CONSTRAINT fk_vi_voucher FOREIGN KEY (voucher_id) REFERENCES vouchers(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+ALTER TABLE workshops
+    ADD CONSTRAINT UQ_tax_id UNIQUE (tax_id);
 
-CREATE INDEX idx_vouchers_tenant_sunat ON vouchers(workshop_id, sunat_status);
+ALTER TABLE branches
+    ADD CONSTRAINT FK_workshops_TO_branches
+        FOREIGN KEY (workshop_id)
+            REFERENCES workshops (id);
 
-CREATE TABLE payments (
-    id CHAR(36) PRIMARY KEY COMMENT 'UUID v4/v7',
-    voucher_id CHAR(36) NOT NULL COMMENT 'Relación con Voucher',
-    amount DECIMAL(10,2) NOT NULL,
-    currency VARCHAR(3) NOT NULL DEFAULT 'PEN',
-    method VARCHAR(20) NOT NULL COMMENT 'Enum: CASH, CREDIT_CARD, DEBIT_CARD, BANK_TRANSFER',
-    paid_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    version BIGINT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted_at TIMESTAMP NULL,
-    CONSTRAINT fk_payment_voucher FOREIGN KEY (voucher_id) REFERENCES vouchers(id) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Entidad de pagos realizados a vouchers';
+ALTER TABLE password_recovery_tokens
+    ADD CONSTRAINT FK_users_TO_password_recovery_tokens
+        FOREIGN KEY (user_id)
+            REFERENCES users (id);
 
-CREATE INDEX idx_payments_voucher ON payments(voucher_id);
+ALTER TABLE workbays
+    ADD CONSTRAINT FK_branches_TO_workbays
+        FOREIGN KEY (branch_id)
+            REFERENCES branches (id);
 
+ALTER TABLE appointments
+    ADD CONSTRAINT FK_branches_TO_appointments
+        FOREIGN KEY (branch_id)
+            REFERENCES branches (id);
 
--- ==========================================
--- 7. INFRASTRUCTURE: PATRÓN OUTBOX (TS006)
--- ==========================================
+ALTER TABLE obd2_devices
+    ADD CONSTRAINT FK_branches_TO_obd2_devices
+        FOREIGN KEY (branch_id)
+            REFERENCES branches (id);
 
-CREATE TABLE outbox_messages (
-    id CHAR(36) PRIMARY KEY,
-    workshop_id CHAR(36) NOT NULL COMMENT 'Tenant que generó el evento (TS006)',
-    event_type VARCHAR(100) NOT NULL,
-    payload JSON NOT NULL,
-    status VARCHAR(20) NOT NULL DEFAULT 'PENDING' COMMENT 'Enum: PENDING, SENT, FAILED',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    processed_at TIMESTAMP NULL,
-    CONSTRAINT fk_outbox_workshop FOREIGN KEY (workshop_id) REFERENCES workshops(id) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Patrón Outbox para consistencia eventual';
+ALTER TABLE obd2_device_vehicle_registration
+    ADD CONSTRAINT FK_obd2_devices_TO_obd2_device_vehicle_registration
+        FOREIGN KEY (obd2_id)
+            REFERENCES obd2_devices (id);
 
+ALTER TABLE dtc_alerts
+    ADD CONSTRAINT FK_telemetry_snapshots_TO_dtc_alerts
+        FOREIGN KEY (telemetry_snapshot_id)
+            REFERENCES telemetry_snapshots (id);
 
--- ==========================================
--- 8. PROCEDIMIENTOS ALMACENADOS (TS010)
--- ==========================================
+ALTER TABLE work_orders
+    ADD CONSTRAINT FK_workbays_TO_work_orders
+        FOREIGN KEY (workbay_id)
+            REFERENCES workbays (id);
 
-DELIMITER $$
+ALTER TABLE work_order_tasks
+    ADD CONSTRAINT FK_work_orders_TO_work_order_tasks
+        FOREIGN KEY (work_order_id)
+            REFERENCES work_orders (id);
 
-CREATE PROCEDURE SP_REGISTRAR_MOVIMIENTO_STOCK(
-    IN p_product_id CHAR(36),
-    IN p_movement_type VARCHAR(20),
-    IN p_quantity INT,
-    IN p_user_id CHAR(36)
-)
-COMMENT 'Registra movimientos de almacén de forma atómica evitando stock negativo concurrentemente'
-SP_BODY: BEGIN
-    DECLARE v_current_stock INT;
-    DECLARE v_new_stock INT;
-    DECLARE v_workshop_id CHAR(36);
-    
-    -- Manejo de Errores SQL Estricto
-    DECLARE EXIT HANDLER FOR SQLEXCEPTION
-    BEGIN
-        ROLLBACK;
-        RESIGNAL;
-    END;
+ALTER TABLE work_order_task_products
+    ADD CONSTRAINT FK_work_order_tasks_TO_work_order_task_products
+        FOREIGN KEY (work_order_task_id)
+            REFERENCES work_order_tasks (id);
 
-    START TRANSACTION;
+ALTER TABLE work_order_task_products
+    ADD CONSTRAINT FK_products_TO_work_order_task_products
+        FOREIGN KEY (product_id)
+            REFERENCES products (id);
 
-    -- SELECT ... FOR UPDATE para bloquear el registro concurrentemente y garantizar consistencia ACID
-    SELECT current_stock, workshop_id INTO v_current_stock, v_workshop_id
-    FROM products
-    WHERE id = p_product_id AND deleted_at IS NULL
-    FOR UPDATE;
+ALTER TABLE quotes
+    ADD CONSTRAINT FK_work_orders_TO_quotes
+        FOREIGN KEY (work_order_id)
+            REFERENCES work_orders (id);
 
-    -- Validar existencia del producto
-    IF v_current_stock IS NULL THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'ERR_PRODUCT_NOT_FOUND: El producto especificado no existe o fue eliminado.';
-    END IF;
+ALTER TABLE vouchers
+    ADD CONSTRAINT FK_quotes_TO_vouchers
+        FOREIGN KEY (quote_id)
+            REFERENCES quotes (id);
 
-    -- Calcular y Validar nuevo stock
-    IF p_movement_type = 'INBOUND' THEN
-        SET v_new_stock = v_current_stock + p_quantity;
-    ELSEIF p_movement_type = 'OUTBOUND' THEN
-        IF v_current_stock < p_quantity THEN
-            SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'ERR_INSUFFICIENT_STOCK: Stock insuficiente para realizar la salida.';
-        END IF;
-        SET v_new_stock = v_current_stock - p_quantity;
-    ELSEIF p_movement_type = 'ADJUSTMENT' THEN
-        SET v_new_stock = v_current_stock + p_quantity; -- p_quantity puede ser negativo para ajustes de salida
-        IF v_new_stock < 0 THEN
-            SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'ERR_INSUFFICIENT_STOCK: El ajuste resulta en stock negativo.';
-        END IF;
-    ELSE
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'ERR_INVALID_MOVEMENT_TYPE: Tipo de movimiento inválido (INBOUND, OUTBOUND, ADJUSTMENT).';
-    END IF;
+ALTER TABLE payments
+    ADD CONSTRAINT FK_vouchers_TO_payments
+        FOREIGN KEY (voucher_id)
+            REFERENCES vouchers (id);
 
-    -- Actualizar stock del producto
-    UPDATE products
-    SET current_stock = v_new_stock,
-        updated_at = CURRENT_TIMESTAMP,
-        updated_by = p_user_id
-    WHERE id = p_product_id;
+ALTER TABLE work_order_tasks
+    ADD CONSTRAINT FK_services_TO_work_order_tasks
+        FOREIGN KEY (service_id)
+            REFERENCES services (id);
 
-    -- Registrar movimiento inmutable en historial
-    INSERT INTO inventory_movements (product_id, movement_type, quantity, created_by)
-    VALUES (p_product_id, p_movement_type, p_quantity, p_user_id);
+ALTER TABLE vehicles
+    ADD CONSTRAINT FK_users_TO_vehicles
+        FOREIGN KEY (user_id)
+            REFERENCES users (id);
 
-    COMMIT;
-END $$
+ALTER TABLE products
+    ADD CONSTRAINT FK_categories_TO_products
+        FOREIGN KEY (category_id)
+            REFERENCES categories (id);
 
-DELIMITER ;
+ALTER TABLE inventory_batches
+    ADD CONSTRAINT FK_products_TO_inventory_batches
+        FOREIGN KEY (product_id)
+            REFERENCES products (id);
+
+ALTER TABLE products
+    ADD CONSTRAINT FK_branches_TO_products
+        FOREIGN KEY (branch_id)
+            REFERENCES branches (id);
+
+ALTER TABLE obd2_device_vehicle_registration
+    ADD CONSTRAINT FK_vehicles_TO_obd2_device_vehicle_registration
+        FOREIGN KEY (vehicle_id)
+            REFERENCES vehicles (id);
+
+ALTER TABLE telemetry_snapshots
+    ADD CONSTRAINT FK_obd2_device_vehicle_registration_TO_telemetry_snapshots
+        FOREIGN KEY (obd2_device_vehicle_registration_id)
+            REFERENCES obd2_device_vehicle_registration (id);
+
+ALTER TABLE customer_registration
+    ADD CONSTRAINT FK_branches_TO_customer_registration
+        FOREIGN KEY (branch_id)
+            REFERENCES branches (id);
+
+ALTER TABLE employee_registration
+    ADD CONSTRAINT FK_branches_TO_employee_registration
+        FOREIGN KEY (branch_id)
+            REFERENCES branches (id);
+
+ALTER TABLE customer_profiles
+    ADD CONSTRAINT FK_users_TO_customer_profiles
+        FOREIGN KEY (user_id)
+            REFERENCES users (id);
+
+ALTER TABLE employee_profiles
+    ADD CONSTRAINT FK_users_TO_employee_profiles
+        FOREIGN KEY (user_id)
+            REFERENCES users (id);
+
+ALTER TABLE owner_profiles
+    ADD CONSTRAINT FK_users_TO_owner_profiles
+        FOREIGN KEY (user_id)
+            REFERENCES users (id);
+
+ALTER TABLE workshops
+    ADD CONSTRAINT FK_owner_profiles_TO_workshops
+        FOREIGN KEY (owner_id)
+            REFERENCES owner_profiles (id);
+
+ALTER TABLE customer_registration
+    ADD CONSTRAINT FK_customer_profiles_TO_customer_registration
+        FOREIGN KEY (customer_id)
+            REFERENCES customer_profiles (id);
+
+ALTER TABLE employee_registration
+    ADD CONSTRAINT FK_employee_profiles_TO_employee_registration
+        FOREIGN KEY (employee_id)
+            REFERENCES employee_profiles (id);
+
+ALTER TABLE vehicles
+    ADD CONSTRAINT FK_vehicle_models_TO_vehicles
+        FOREIGN KEY (vehicle_model_id)
+            REFERENCES vehicle_models (id);
+
+ALTER TABLE employee_registration
+    ADD CONSTRAINT FK_specialties_TO_employee_registration
+        FOREIGN KEY (specialty_id)
+            REFERENCES specialties (id);
+
+ALTER TABLE work_orders
+    ADD CONSTRAINT FK_customer_profiles_TO_work_orders
+        FOREIGN KEY (customer_id)
+            REFERENCES customer_profiles (id);
+
+ALTER TABLE work_orders
+    ADD CONSTRAINT FK_vehicles_TO_work_orders
+        FOREIGN KEY (vehicle_id)
+            REFERENCES vehicles (id);
