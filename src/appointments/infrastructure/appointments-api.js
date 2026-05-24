@@ -9,39 +9,102 @@ import { environment } from '../../environments/environment.js';
  */
 export class AppointmentsApi extends BaseApiEndpoint {
   constructor() {
-    super(`${environment.apiBaseUrl}/appointments`, new AppointmentAssembler());
-    this.baseUrl = environment.apiBaseUrl;
+    const baseUrl = environment.apiBaseUrl || environment.platformProviderApiBaseUrl;
+
+    super(`${baseUrl}${environment.platformProviderAppointmentsEndpointPath || '/appointments'}`, new AppointmentAssembler());
+
+    this.baseUrl = baseUrl;
   }
 
   async getAppointmentsWithRelations(query = '') {
-    const [appointmentsResponse, customersResponse, vehiclesResponse] = await Promise.all([
+    const [
+      appointmentsResponse,
+      usersResponse,
+      customerProfilesResponse,
+      vehiclesResponse,
+      vehicleModelsResponse,
+      branchesResponse
+    ] = await Promise.all([
       this.http.get(''),
-      axios.get(`${this.baseUrl}/customers`),
-      axios.get(`${this.baseUrl}/vehicles`)
+      axios.get(`${this.baseUrl}${environment.platformProviderUsersEndpointPath || '/users'}`),
+      axios.get(`${this.baseUrl}${environment.platformProviderCustomerProfilesEndpointPath || '/customer_profiles'}`),
+      axios.get(`${this.baseUrl}${environment.platformProviderVehiclesEndpointPath || '/vehicles'}`),
+      axios.get(`${this.baseUrl}${environment.platformProviderVehicleModelsEndpointPath || '/vehicle_models'}`),
+      axios.get(`${this.baseUrl}${environment.platformProviderBranchesEndpointPath || '/branches'}`)
     ]);
 
-    const customersById = new Map(
-      customersResponse.data
-        .filter((customer) => !customer.deleted_at)
-        .map((customer) => [customer.id, customer])
+    const appointments = this.toArray(appointmentsResponse);
+    const users = this.toArray(usersResponse);
+    const customerProfiles = this.toArray(customerProfilesResponse);
+    const vehicles = this.toArray(vehiclesResponse);
+    const vehicleModels = this.toArray(vehicleModelsResponse);
+    const branches = this.toArray(branchesResponse);
+
+    const usersById = new Map(
+        users
+            .filter((user) => !user.deleted_at)
+            .map((user) => [user.id, user])
+    );
+
+    const customerProfilesById = new Map(
+        customerProfiles
+            .filter((customerProfile) => !customerProfile.deleted_at)
+            .map((customerProfile) => [customerProfile.id, customerProfile])
     );
 
     const vehiclesById = new Map(
-      vehiclesResponse.data
-        .filter((vehicle) => !vehicle.deleted_at)
-        .map((vehicle) => [vehicle.id, vehicle])
+        vehicles
+            .filter((vehicle) => !vehicle.deleted_at)
+            .map((vehicle) => [vehicle.id, vehicle])
+    );
+
+    const vehicleModelsById = new Map(
+        vehicleModels.map((vehicleModel) => [vehicleModel.id, vehicleModel])
+    );
+
+    const branchesById = new Map(
+        branches
+            .filter((branch) => !branch.deleted_at)
+            .map((branch) => [branch.id, branch])
     );
 
     const normalizedQuery = query.trim().toLowerCase();
 
-    const enrichedAppointments = appointmentsResponse.data
-      .filter((appointment) => !appointment.deleted_at)
-      .map((appointment) => ({
-        ...appointment,
-        customer: customersById.get(appointment.customer_id) || null,
-        vehicle: vehiclesById.get(appointment.vehicle_id) || null
-      }))
-      .map((appointment) => this.assembler.toEntityFromResource(appointment));
+    const enrichedAppointments = appointments
+        .filter((appointment) => !appointment.deleted_at)
+        .map((appointment) => {
+          const customerProfile = appointment.customer_id
+              ? customerProfilesById.get(appointment.customer_id)
+              : null;
+
+          const customerUser = customerProfile?.user_id
+              ? usersById.get(customerProfile.user_id)
+              : null;
+
+          const vehicle = appointment.vehicle_id
+              ? vehiclesById.get(appointment.vehicle_id)
+              : null;
+
+          const vehicleModel = vehicle?.vehicle_model_id
+              ? vehicleModelsById.get(vehicle.vehicle_model_id)
+              : null;
+
+          const branch = appointment.branch_id
+              ? branchesById.get(appointment.branch_id)
+              : null;
+
+          return {
+            ...appointment,
+            workshop_id: appointment.workshop_id || branch?.workshop_id || '',
+            customerProfile,
+            customerUser,
+            vehicle,
+            vehicleModel,
+            branch
+          };
+        })
+        .map((appointment) => this.assembler.toEntityFromResource(appointment))
+        .sort((a, b) => new Date(a.appointmentDate) - new Date(b.appointmentDate));
 
     if (!normalizedQuery) {
       return enrichedAppointments;
@@ -57,5 +120,17 @@ export class AppointmentsApi extends BaseApiEndpoint {
         appointment.status
       ].some((value) => String(value).toLowerCase().includes(normalizedQuery));
     });
+  }
+
+  toArray(response) {
+    if (Array.isArray(response.data)) {
+      return response.data;
+    }
+
+    if (Array.isArray(response.data?.data)) {
+      return response.data.data;
+    }
+
+    return [];
   }
 }

@@ -7,42 +7,42 @@ import { BaseAssembler } from '../../shared/infrastructure/base-assembler.js';
  */
 export class AppointmentAssembler extends BaseAssembler {
   toEntityFromResource(resource) {
-    const customer = resource.customer || null;
+    const customerProfile = resource.customerProfile || null;
+    const customerUser = resource.customerUser || null;
     const vehicle = resource.vehicle || null;
+    const vehicleModel = resource.vehicleModel || null;
 
-    const customerName = customer?.full_name
-      || resource.pre_registered_full_name
-      || resource.customer_name
-      || 'Cliente sin registrar';
+    const customerName = this.resolveCustomerName(customerProfile, resource);
 
-    const customerPhone = customer?.phone
-      || resource.pre_registered_phone
-      || resource.customer_phone
-      || 'Sin teléfono';
+    const customerPhone =
+        customerUser?.phone ||
+        resource.pre_registered_phone ||
+        resource.customer_phone ||
+        'Sin teléfono';
 
     const vehicleSummary = vehicle
-      ? `${vehicle.brand || ''} ${vehicle.model || ''} ${vehicle.plate_number || ''}`.trim()
-      : resource.pre_registered_vehicle_brand_model
-        || resource.pre_registered_vehicle_plate
-        || resource.vehicle_summary
-        || 'Vehículo por registrar';
+        ? `${vehicleModel?.brand || 'Marca'} ${vehicleModel?.model || 'Modelo'} - ${vehicle.plate_number}`
+        : resource.pre_registered_vehicle_brand_model ||
+        resource.pre_registered_vehicle_plate ||
+        resource.vehicle_summary ||
+        'Vehículo por registrar';
 
     return new Appointment(
-      resource.id,
-      resource.workshop_id,
-      resource.branch_id,
-      resource.appointment_date || resource.created_at || new Date().toISOString(),
-      resource.status || AppointmentStatus.SCHEDULED,
-      customerName,
-      customerPhone,
-      vehicleSummary,
-      resource.service_type || 'Revisión general',
-      resource.mechanic_name || 'Luis P.',
-      resource.notes || 'Sin observaciones registradas.',
-      resource.version ?? 0,
-      resource.customer_id ?? null,
-      resource.vehicle_id ?? null,
-      resource.deleted_at ?? null
+        resource.id,
+        resource.workshop_id,
+        resource.branch_id,
+        this.normalizeDate(resource.appointment_date || resource.created_at || new Date().toISOString()),
+        resource.status || AppointmentStatus.SCHEDULED,
+        customerName,
+        customerPhone,
+        vehicleSummary,
+        resource.service_type || this.resolveDefaultService(resource.status),
+        resource.mechanic_name || 'Por asignar',
+        resource.notes || 'Sin observaciones registradas.',
+        resource.version ?? 0,
+        resource.customer_id ?? null,
+        resource.vehicle_id ?? null,
+        resource.deleted_at ?? null
     );
   }
 
@@ -67,7 +67,45 @@ export class AppointmentAssembler extends BaseAssembler {
   }
 
   toEntitiesFromResponse(response) {
-    const data = Array.isArray(response) ? response : (response.data || []);
+    const data = Array.isArray(response) ? response : response.data || [];
     return data.map((resource) => this.toEntityFromResource(resource));
+  }
+
+  resolveCustomerName(customerProfile, resource) {
+    if (!customerProfile) {
+      return resource.pre_registered_full_name || 'Cliente sin registrar';
+    }
+
+    if (customerProfile.is_corporate && customerProfile.business_name) {
+      return customerProfile.business_name;
+    }
+
+    const fullName = `${customerProfile.first_name || ''} ${customerProfile.last_name || ''}`.trim();
+
+    return fullName || resource.pre_registered_full_name || 'Cliente sin registrar';
+  }
+
+  normalizeDate(value) {
+    if (!value) {
+      return new Date().toISOString();
+    }
+
+    if (value.includes('T')) {
+      return value;
+    }
+
+    return value.replace(' ', 'T');
+  }
+
+  resolveDefaultService(status) {
+    if (status === AppointmentStatus.COMPLETED) {
+      return 'Revisión general';
+    }
+
+    if (status === AppointmentStatus.PENDING_APPROVAL) {
+      return 'Diagnóstico';
+    }
+
+    return 'Mantenimiento preventivo';
   }
 }
