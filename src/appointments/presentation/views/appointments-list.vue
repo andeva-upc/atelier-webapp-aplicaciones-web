@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useAppointmentsStore } from '../../application/appointments.store.js';
 import { AppointmentStatus } from '../../domain/model/appointment.entity.js';
@@ -7,6 +8,8 @@ import AppointmentsForm from './appointments-form.vue';
 
 const store = useAppointmentsStore();
 const { t } = useI18n();
+const router = useRouter();
+const route = useRoute();
 
 const searchQuery = ref('');
 const selectedFilter = ref('ALL');
@@ -58,10 +61,34 @@ const statusClass = (status) => {
   return map[status] || 'status-pending';
 };
 
+const syncFormWithRoute = () => {
+  if (route.name === 'appointments-new') {
+    formMode.value = 'create';
+    selectedAppointment.value = null;
+    showDetail.value = false;
+    showForm.value = true;
+    return;
+  }
+
+  if (route.name === 'appointments-edit') {
+    const appointmentId = route.params.id;
+    const appointment = store.activeAppointments.find((item) => item.id === appointmentId);
+
+    if (appointment) {
+      formMode.value = 'edit';
+      selectedAppointment.value = appointment;
+      showDetail.value = false;
+      showForm.value = true;
+    }
+
+    return;
+  }
+
+  showForm.value = false;
+};
+
 const openCreateForm = () => {
-  formMode.value = 'create';
-  selectedAppointment.value = null;
-  showForm.value = true;
+  router.push({ name: 'appointments-new' });
 };
 
 const openDetail = (appointment) => {
@@ -76,9 +103,22 @@ const closeDetail = () => {
 
 const openEditForm = () => {
   if (!selectedAppointment.value) return;
+
   showDetail.value = false;
-  formMode.value = 'edit';
-  showForm.value = true;
+
+  router.push({
+    name: 'appointments-edit',
+    params: { id: selectedAppointment.value.id }
+  });
+};
+
+const handleFormVisibility = (value) => {
+  showForm.value = value;
+
+  if (!value && route.name !== 'appointments') {
+    selectedAppointment.value = null;
+    router.push({ name: 'appointments' });
+  }
 };
 
 const handleSaveAppointment = async (appointment) => {
@@ -89,6 +129,8 @@ const handleSaveAppointment = async (appointment) => {
   }
 
   showForm.value = false;
+  selectedAppointment.value = null;
+  await router.push({ name: 'appointments' });
 };
 
 watch(searchQuery, (query) => {
@@ -98,8 +140,23 @@ watch(searchQuery, (query) => {
   }, 300);
 });
 
-onMounted(() => {
-  store.fetchAppointments();
+watch(
+    () => route.fullPath,
+    () => {
+      syncFormWithRoute();
+    }
+);
+
+watch(
+    () => store.appointments.length,
+    () => {
+      syncFormWithRoute();
+    }
+);
+
+onMounted(async () => {
+  await store.fetchAppointments();
+  syncFormWithRoute();
 });
 </script>
 
@@ -213,11 +270,12 @@ onMounted(() => {
     </section>
 
     <AppointmentsForm
-      v-model:visible="showForm"
-      :mode="formMode"
-      :appointment="selectedAppointment"
-      :saving="store.isSaving"
-      @save="handleSaveAppointment"
+        :visible="showForm"
+        :mode="formMode"
+        :appointment="selectedAppointment"
+        :saving="store.isSaving"
+        @update:visible="handleFormVisibility"
+        @save="handleSaveAppointment"
     />
 
     <pv-dialog
