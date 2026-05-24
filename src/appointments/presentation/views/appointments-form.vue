@@ -1,7 +1,9 @@
 <script setup>
-import { computed, reactive, watch } from 'vue';
+import axios from 'axios';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Appointment, AppointmentStatus } from '../../domain/model/appointment.entity.js';
+import { environment } from '../../../environments/environment.js';
 
 const props = defineProps({
   visible: Boolean,
@@ -22,10 +24,14 @@ const props = defineProps({
 const emit = defineEmits(['update:visible', 'save']);
 const { t } = useI18n();
 
+const customers = ref([]);
+const vehicles = ref([]);
+const selectedBranch = ref(null);
+
 const form = reactive({
-  customerName: '',
+  customerId: '',
   customerPhone: '',
-  vehicleSummary: '',
+  vehicleId: '',
   serviceType: '',
   date: '',
   time: '',
@@ -36,20 +42,30 @@ const form = reactive({
 
 const isEditMode = computed(() => props.mode === 'edit');
 
+const selectedCustomer = computed(() => {
+  return customers.value.find((customer) => customer.id === form.customerId) || null;
+});
+
+const availableVehicles = computed(() => {
+  if (!selectedCustomer.value) return [];
+
+  return vehicles.value.filter((vehicle) => vehicle.userId === selectedCustomer.value.userId);
+});
+
 const isFormValid = computed(() => {
-  return form.customerName.trim().length >= 3
-    && form.customerPhone.trim().length >= 7
-    && form.vehicleSummary.trim().length >= 3
-    && form.serviceType.trim().length > 0
-    && form.date
-    && form.time
-    && form.mechanicName.trim().length > 0;
+  return form.customerId
+      && form.customerPhone.trim().length >= 7
+      && form.vehicleId
+      && form.serviceType.trim().length > 0
+      && form.date
+      && form.time
+      && form.mechanicName.trim().length > 0;
 });
 
 const resetForm = () => {
-  form.customerName = '';
+  form.customerId = '';
   form.customerPhone = '';
-  form.vehicleSummary = '';
+  form.vehicleId = '';
   form.serviceType = '';
   form.date = '';
   form.time = '';
@@ -64,9 +80,9 @@ const patchForm = () => {
     return;
   }
 
-  form.customerName = props.appointment.customerName || '';
+  form.customerId = props.appointment.customerId || '';
   form.customerPhone = props.appointment.customerPhone || '';
-  form.vehicleSummary = props.appointment.vehicleSummary || '';
+  form.vehicleId = props.appointment.vehicleId || '';
   form.serviceType = props.appointment.serviceType || '';
   form.date = props.appointment.getDateLabel?.() || '';
   form.time = props.appointment.getTimeLabel?.() || '';
@@ -75,12 +91,100 @@ const patchForm = () => {
   form.status = props.appointment.status || AppointmentStatus.SCHEDULED;
 };
 
+const loadFormOptions = async () => {
+  const baseUrl = environment.platformProviderApiBaseUrl;
+
+  const [
+    usersResponse,
+    customerProfilesResponse,
+    vehiclesResponse,
+    vehicleModelsResponse,
+    branchesResponse
+  ] = await Promise.all([
+    axios.get(`${baseUrl}${environment.platformProviderUsersEndpointPath}`),
+    axios.get(`${baseUrl}${environment.platformProviderCustomerProfilesEndpointPath}`),
+    axios.get(`${baseUrl}${environment.platformProviderVehiclesEndpointPath}`),
+    axios.get(`${baseUrl}${environment.platformProviderVehicleModelsEndpointPath}`),
+    axios.get(`${baseUrl}${environment.platformProviderBranchesEndpointPath}`)
+  ]);
+
+  const users = toArray(usersResponse);
+  const customerProfiles = toArray(customerProfilesResponse);
+  const rawVehicles = toArray(vehiclesResponse);
+  const vehicleModels = toArray(vehicleModelsResponse);
+  const branches = toArray(branchesResponse);
+
+  const usersById = new Map(
+      users
+          .filter((user) => !user.deleted_at)
+          .map((user) => [user.id, user])
+  );
+
+  const vehicleModelsById = new Map(
+      vehicleModels.map((model) => [model.id, model])
+  );
+
+  customers.value = customerProfiles
+      .filter((customer) => !customer.deleted_at)
+      .map((customer) => {
+        const user = usersById.get(customer.user_id);
+
+        const customerName = customer.is_corporate && customer.business_name
+            ? customer.business_name
+            : `${customer.first_name || ''} ${customer.last_name || ''}`.trim();
+
+        return {
+          id: customer.id,
+          userId: customer.user_id,
+          name: customerName || 'Cliente sin nombre',
+          phone: user?.phone || 'Sin teléfono'
+        };
+      });
+
+  vehicles.value = rawVehicles
+      .filter((vehicle) => !vehicle.deleted_at)
+      .map((vehicle) => {
+        const model = vehicleModelsById.get(vehicle.vehicle_model_id);
+
+        return {
+          id: vehicle.id,
+          userId: vehicle.user_id,
+          summary: `${model?.brand || 'Marca'} ${model?.model || 'Modelo'} - ${vehicle.plate_number}`
+        };
+      });
+
+  selectedBranch.value = branches.find((branch) => !branch.deleted_at) || null;
+
+  patchForm();
+};
+
+const toArray = (response) => {
+  if (Array.isArray(response.data)) {
+    return response.data;
+  }
+
+  if (Array.isArray(response.data?.data)) {
+    return response.data.data;
+  }
+
+  return [];
+};
+
+const handleCustomerChange = () => {
+  const customer = customers.value.find((item) => item.id === form.customerId);
+
+  form.customerPhone = customer?.phone || '';
+  form.vehicleId = '';
+};
+
 watch(
-  () => [props.visible, props.appointment, props.mode],
-  () => {
-    if (props.visible) patchForm();
-  },
-  { immediate: true }
+    () => [props.visible, props.appointment, props.mode],
+    () => {
+      if (props.visible) {
+        patchForm();
+      }
+    },
+    { immediate: true }
 );
 
 const close = () => {
@@ -98,42 +202,51 @@ const createId = () => {
 const handleSubmit = () => {
   if (!isFormValid.value || props.saving) return;
 
-  const appointmentDate = `${form.date}T${form.time}:00Z`;
+  const customer = customers.value.find((item) => item.id === form.customerId);
+  const vehicle = vehicles.value.find((item) => item.id === form.vehicleId);
+
+  if (!customer || !vehicle) return;
+
+  const appointmentDate = `${form.date}T${form.time}:00`;
   const currentAppointment = props.appointment;
 
   const entity = new Appointment(
-    currentAppointment?.id || createId(),
-    currentAppointment?.workshopId || 'e26b1580-b3b0-466d-8c10-ca7f62d1c9ef',
-    currentAppointment?.branchId || 'b1ba1580-b3b0-466d-8c10-ca7f62d1c9aa',
-    appointmentDate,
-    form.status,
-    form.customerName,
-    form.customerPhone,
-    form.vehicleSummary,
-    form.serviceType,
-    form.mechanicName,
-    form.notes || t('appointments.notes.empty'),
-    currentAppointment ? currentAppointment.version + 1 : 0,
-    currentAppointment?.customerId || null,
-    currentAppointment?.vehicleId || null,
-    currentAppointment?.deletedAt || null
+      currentAppointment?.id || createId(),
+      currentAppointment?.workshopId || selectedBranch.value?.workshop_id || 'e26b1580-b3b0-466d-8c10-ca7f62d1c9ef',
+      currentAppointment?.branchId || selectedBranch.value?.id || 'b1ba1580-b3b0-466d-8c10-ca7f62d1c9aa',
+      appointmentDate,
+      form.status,
+      customer.name,
+      customer.phone,
+      vehicle.summary,
+      form.serviceType,
+      form.mechanicName,
+      form.notes || t('appointments.notes.empty'),
+      currentAppointment ? currentAppointment.version + 1 : 0,
+      customer.id,
+      vehicle.id,
+      currentAppointment?.deletedAt || null
   );
 
   emit('save', entity);
 };
+
+onMounted(async () => {
+  await loadFormOptions();
+});
 </script>
 
 <template>
   <pv-dialog
-    :visible="visible"
-    @update:visible="emit('update:visible', $event)"
-    :modal="true"
-    class="appointment-dialog"
-    :style="{ width: '680px' }"
-    :draggable="false"
-    :closable="true"
-    :showHeader="true"
-    appendTo="body"
+      :visible="visible"
+      @update:visible="emit('update:visible', $event)"
+      :modal="true"
+      class="appointment-dialog"
+      :style="{ width: '680px' }"
+      :draggable="false"
+      :closable="true"
+      :showHeader="true"
+      appendTo="body"
   >
     <template #header>
       <h2 class="dialog-title">
@@ -144,24 +257,57 @@ const handleSubmit = () => {
     <form class="appointment-form" @submit.prevent="handleSubmit">
       <label class="form-field form-field-full">
         <span>{{ t('appointments.fields.customer') }} *</span>
-        <input v-model="form.customerName" type="text" :placeholder="t('appointments.placeholders.customer')" />
+
+        <select v-model="form.customerId" @change="handleCustomerChange">
+          <option value="">Select customer</option>
+
+          <option
+              v-for="customer in customers"
+              :key="customer.id"
+              :value="customer.id"
+          >
+            {{ customer.name }}
+          </option>
+        </select>
       </label>
 
       <div class="form-grid">
         <label class="form-field">
           <span>{{ t('appointments.fields.phone') }} *</span>
-          <input v-model="form.customerPhone" type="text" :placeholder="t('appointments.placeholders.phone')" />
+
+          <input
+              v-model="form.customerPhone"
+              type="text"
+              readonly
+              :placeholder="t('appointments.placeholders.phone')"
+          />
         </label>
 
         <label class="form-field">
           <span>{{ t('appointments.fields.vehicle') }} *</span>
-          <input v-model="form.vehicleSummary" type="text" :placeholder="t('appointments.placeholders.vehicle')" />
+
+          <select v-model="form.vehicleId" :disabled="availableVehicles.length === 0">
+            <option value="">Select vehicle</option>
+
+            <option
+                v-for="vehicle in availableVehicles"
+                :key="vehicle.id"
+                :value="vehicle.id"
+            >
+              {{ vehicle.summary }}
+            </option>
+          </select>
         </label>
       </div>
 
       <label class="form-field form-field-full">
         <span>{{ t('appointments.fields.service') }} *</span>
-        <input v-model="form.serviceType" type="text" :placeholder="t('appointments.placeholders.service')" />
+
+        <input
+            v-model="form.serviceType"
+            type="text"
+            :placeholder="t('appointments.placeholders.service')"
+        />
       </label>
 
       <div class="form-grid">
@@ -178,22 +324,42 @@ const handleSubmit = () => {
 
       <label class="form-field form-field-full">
         <span>{{ t('appointments.fields.mechanic') }} *</span>
-        <input v-model="form.mechanicName" type="text" :placeholder="t('appointments.placeholders.mechanic')" />
+
+        <input
+            v-model="form.mechanicName"
+            type="text"
+            :placeholder="t('appointments.placeholders.mechanic')"
+        />
       </label>
 
       <label class="form-field form-field-full">
         <span>{{ t('appointments.fields.notes') }}</span>
-        <textarea v-model="form.notes" :placeholder="t('appointments.placeholders.notes')"></textarea>
+
+        <textarea
+            v-model="form.notes"
+            :placeholder="t('appointments.placeholders.notes')"
+        ></textarea>
       </label>
 
       <label v-if="isEditMode" class="form-field form-field-full">
         <span>{{ t('appointments.fields.status') }}</span>
+
         <select v-model="form.status">
-          <option :value="AppointmentStatus.SCHEDULED">{{ t('appointments.status.confirmed') }}</option>
-          <option :value="AppointmentStatus.PENDING_APPROVAL">{{ t('appointments.status.pending') }}</option>
-          <option :value="AppointmentStatus.IN_PROGRESS">{{ t('appointments.status.in_progress') }}</option>
-          <option :value="AppointmentStatus.COMPLETED">{{ t('appointments.status.completed') }}</option>
-          <option :value="AppointmentStatus.CANCELLED">{{ t('appointments.status.cancelled') }}</option>
+          <option :value="AppointmentStatus.SCHEDULED">
+            {{ t('appointments.status.confirmed') }}
+          </option>
+          <option :value="AppointmentStatus.PENDING_APPROVAL">
+            {{ t('appointments.status.pending') }}
+          </option>
+          <option :value="AppointmentStatus.IN_PROGRESS">
+            {{ t('appointments.status.in_progress') }}
+          </option>
+          <option :value="AppointmentStatus.COMPLETED">
+            {{ t('appointments.status.completed') }}
+          </option>
+          <option :value="AppointmentStatus.CANCELLED">
+            {{ t('appointments.status.cancelled') }}
+          </option>
         </select>
       </label>
 
