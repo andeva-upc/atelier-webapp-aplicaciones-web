@@ -9,11 +9,11 @@ import { environment } from '../../environments/environment.js';
  */
 export class AppointmentsApi extends BaseApiEndpoint {
   constructor() {
-    const baseUrl = environment.apiBaseUrl || environment.platformProviderApiBaseUrl;
+    const endpointUrl = `${environment.platformProviderApiBaseUrl}${environment.platformProviderAppointmentsEndpointPath}`;
 
-    super(`${baseUrl}${environment.platformProviderAppointmentsEndpointPath || '/appointments'}`, new AppointmentAssembler());
+    super(endpointUrl, new AppointmentAssembler());
 
-    this.baseUrl = baseUrl;
+    this.baseUrl = environment.platformProviderApiBaseUrl;
   }
 
   async getAppointmentsWithRelations(query = '') {
@@ -26,11 +26,11 @@ export class AppointmentsApi extends BaseApiEndpoint {
       branchesResponse
     ] = await Promise.all([
       this.http.get(''),
-      axios.get(`${this.baseUrl}${environment.platformProviderUsersEndpointPath || '/users'}`),
-      axios.get(`${this.baseUrl}${environment.platformProviderCustomerProfilesEndpointPath || '/customer_profiles'}`),
-      axios.get(`${this.baseUrl}${environment.platformProviderVehiclesEndpointPath || '/vehicles'}`),
-      axios.get(`${this.baseUrl}${environment.platformProviderVehicleModelsEndpointPath || '/vehicle_models'}`),
-      axios.get(`${this.baseUrl}${environment.platformProviderBranchesEndpointPath || '/branches'}`)
+      axios.get(`${this.baseUrl}${environment.platformProviderUsersEndpointPath}`),
+      axios.get(`${this.baseUrl}${environment.platformProviderCustomerProfilesEndpointPath}`),
+      axios.get(`${this.baseUrl}${environment.platformProviderVehiclesEndpointPath}`),
+      axios.get(`${this.baseUrl}${environment.platformProviderVehicleModelsEndpointPath}`),
+      axios.get(`${this.baseUrl}${environment.platformProviderBranchesEndpointPath}`)
     ]);
 
     const appointments = this.toArray(appointmentsResponse);
