@@ -119,17 +119,46 @@
       "ok": "OK",
       "low_stock": "Stock bajo"
     },
-    "form": {
-      "title": "Nuevo Repuesto",
+    "productDetail": {
+      "title": "Detalle de Repuesto",
+      "back": "Volver a inventario",
+      "viewBatches": "Ver historial de lotes",
+      "sku": "SKU",
+      "category": "Categoría",
+      "description": "Descripción",
+      "salePrice": "Precio de Venta",
+      "minimumStock": "Stock mínimo"
+    },
+    "productForm": {
+      "newTitle": "Nuevo Repuesto",
+      "editTitle": "Editar Repuesto",
       "name": "Nombre del repuesto",
       "sku": "SKU",
       "category": "Categoría",
-      "brand": "Marca",
-      "unit_price": "Precio unitario",
-      "unit_cost": "Costo unitario",
-      "current_stock": "Stock inicial",
-      "minimum_stock": "Stock mínimo",
-      "save": "Guardar",
+      "description": "Descripción",
+      "salePrice": "Precio de Venta",
+      "minimumStock": "Stock mínimo",
+      "save": "Guardar repuesto",
+      "cancel": "Cancelar"
+    },
+    "batchList": {
+      "title": "Historial de Lotes",
+      "back": "Volver a detalles",
+      "newBatch": "Registrar nuevo lote",
+      "columns": {
+        "id": "ID Lote",
+        "date": "Fecha de Ingreso",
+        "initialQuantity": "Cant. Inicial",
+        "availableQuantity": "Cant. Disponible",
+        "cost": "Costo Adquisición"
+      },
+      "empty": "No hay lotes registrados para este repuesto."
+    },
+    "batchForm": {
+      "newTitle": "Registrar Nuevo Lote",
+      "quantity": "Cantidad a ingresar",
+      "cost": "Costo de adquisición total",
+      "save": "Registrar lote",
       "cancel": "Cancelar"
     }
   },
