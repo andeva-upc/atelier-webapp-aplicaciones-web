@@ -13,32 +13,16 @@ export const useInventoryStore = defineStore('inventory', {
     products: [],
     /** @type {import('../domain/model/product.entity').Product[]} */
     allProducts: [],
+    /** @type {import('../domain/model/product.entity').Product | null} */
+    selectedProduct: null,
     isLoading: false,
     error: null
   }),
 
   getters: {
-    /**
-     * Total number of products registered.
-     * @returns {number}
-     */
     totalProducts: (state) => state.products.length,
-
-    /**
-     * Products with low stock levels.
-     * @returns {import('../domain/model/product.entity').Product[]}
-     */
     lowStockProducts: (state) => state.products.filter(p => p.isLowStock()),
-
-    /**
-     * Count of low stock products.
-     * @returns {number}
-      */
     lowStockCount: (state) => state.products.filter(p => p.isLowStock()).length,
-
-    /**
-     * Returns a list of unique categories from the current products.
-     */
     uniqueCategories: (state) => {
       const categories = state.allProducts.map(p => p.category).filter(c => c);
       return [...new Set(categories)];
@@ -47,16 +31,93 @@ export const useInventoryStore = defineStore('inventory', {
 
   actions: {
     /**
-     * Fetches products and initializes the list.
+     * Fetches products by branch ID.
      */
-    async fetchProducts() {
+    async fetchProductsByBranchId(branchId) {
       this.isLoading = true;
       try {
-        const products = await inventoryApi.getAll();
+        const products = await inventoryApi.getByBranchId(branchId);
         this.allProducts = products;
         this.products = products;
       } catch (err) {
-        this.error = err.message || 'Failed to fetch inventory';
+        this.error = err.message || 'Failed to fetch inventory by branch';
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    /**
+     * Fetches a single product by ID.
+     */
+    async fetchProductById(id) {
+      this.isLoading = true;
+      try {
+        const product = await inventoryApi.getById(id);
+        this.selectedProduct = product;
+        return product;
+      } catch (err) {
+        this.error = err.message || 'Failed to fetch product';
+        throw err;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    /**
+     * Creates a new product.
+     * @param {import('../domain/model/product.entity').Product} productEntity
+     */
+    async createProduct(productEntity) {
+      this.isLoading = true;
+      try {
+        const newProduct = await inventoryApi.create(productEntity);
+        this.products.push(newProduct);
+        return newProduct;
+      } catch (err) {
+        this.error = err.message || 'Failed to create product';
+        throw err;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    /**
+     * Updates an existing product.
+     * @param {string} id
+     * @param {import('../domain/model/product.entity').Product} productEntity
+     */
+    async updateProduct(id, productEntity) {
+      this.isLoading = true;
+      try {
+        const updatedProduct = await inventoryApi.update(productEntity, id);
+        const index = this.products.findIndex(p => p.id === id);
+        if (index !== -1) {
+          this.products[index] = updatedProduct;
+        }
+        if (this.selectedProduct && this.selectedProduct.id === id) {
+          this.selectedProduct = updatedProduct;
+        }
+        return updatedProduct;
+      } catch (err) {
+        this.error = err.message || 'Failed to update product';
+        throw err;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    /**
+     * Adds a batch to a product.
+     */
+    async addBatchToProduct(productId, batchData) {
+      this.isLoading = true;
+      try {
+        await inventoryApi.addBatch(productId, batchData);
+        // Refresh product details to get new batch and updated stock
+        await this.fetchProductById(productId);
+      } catch (err) {
+        this.error = err.message || 'Failed to add batch to product';
+        throw err;
       } finally {
         this.isLoading = false;
       }
@@ -64,15 +125,13 @@ export const useInventoryStore = defineStore('inventory', {
 
     /**
      * Filters products by query and category.
-     * @param {string} query 
-     * @param {string} category
      */
     filterProducts(query = '', category = null) {
       this.products = this.allProducts.filter(product => {
         const matchesQuery = !query || 
           product.name.toLowerCase().includes(query.toLowerCase()) ||
           product.sku.toLowerCase().includes(query.toLowerCase()) ||
-          (product.brand && product.brand.toLowerCase().includes(query.toLowerCase()));
+          (product.description && product.description.toLowerCase().includes(query.toLowerCase()));
         
         const matchesCategory = !category || product.category === category;
         
@@ -81,50 +140,10 @@ export const useInventoryStore = defineStore('inventory', {
     },
 
     /**
-     * Search products by query (legacy method, updated to use filterProducts).
-     * @param {string} query 
+     * Search products by query.
      */
     searchProducts(query) {
       this.filterProducts(query, null);
-    },
-
-    /**
-     * Updates the stock level of a product.
-     * @param {string} id
-     * @param {number} newStock
-     */
-    async updateStock(id, newStock) {
-      this.isLoading = true;
-      try {
-        const updatedProduct = await inventoryApi.patch(id, { current_stock: newStock });
-        const index = this.products.findIndex(p => p.id === id);
-        if (index !== -1) {
-          this.products[index] = updatedProduct;
-        }
-      } catch (err) {
-        this.error = err.message || 'Failed to update stock';
-        throw err;
-      } finally {
-        this.isLoading = false;
-      }
-    },
-
-    /**
-     * Adds a new product to the inventory.
-     * @param {import('../domain/model/product.entity').Product} productEntity
-     */
-    async addProduct(productEntity) {
-      this.isLoading = true;
-      try {
-        const newProduct = await inventoryApi.create(productEntity);
-        this.products.push(newProduct);
-        return newProduct;
-      } catch (err) {
-        this.error = err.message || 'Failed to add product';
-        throw err;
-      } finally {
-        this.isLoading = false;
-      }
     }
   }
 });
