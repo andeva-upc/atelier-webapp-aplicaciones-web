@@ -7,37 +7,42 @@ import { Product } from '../domain/model/product.entity.js';
 export class ProductAssembler {
   /**
    * Maps a resource to a domain entity.
-   * @param {Object} resource - The product data from the API (snake_case).
-   * @returns {Product} The product entity (camelCase).
+   * @param {Object} resource - The product data from the API.
+   * @returns {Product} The product entity.
    */
   toEntityFromResource(resource) {
     return new Product(
       resource.id,
-      resource.sku,
-      resource.name,
+      resource.branchId,
       resource.category,
-      resource.unit_price,
-      resource.unit_cost,
-      resource.current_stock,
-      resource.minimum_stock
+      resource.name,
+      resource.sku,
+      resource.description,
+      resource.salePrice,
+      resource.minimumStock,
+      resource.currentStock,
+      resource.batches || [],
+      resource.createdAt,
+      resource.updatedAt
     );
   }
 
   /**
    * Maps an entity back to a resource for API consumption.
    * @param {Product} entity - The product domain entity.
-   * @returns {Object} The product resource (snake_case).
+   * @returns {Object} The product resource.
    */
   toResourceFromEntity(entity) {
     return {
       id: entity.id,
-      sku: entity.sku,
-      name: entity.name,
+      branchId: entity.branchId,
       category: entity.category,
-      unit_price: entity.unitPrice,
-      unit_cost: entity.unitCost,
-      current_stock: entity.currentStock,
-      minimum_stock: entity.minimumStock
+      name: entity.name,
+      sku: entity.sku,
+      description: entity.description,
+      salePrice: entity.salePrice,
+      minimumStock: entity.minimumStock,
+      currentStock: entity.currentStock
     };
   }
 }

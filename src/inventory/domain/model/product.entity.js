@@ -5,23 +5,44 @@
 export class Product {
   /**
    * @param {string} id - Unique identifier.
-   * @param {string} sku - Stock Keeping Unit.
-   * @param {string} name - Product name.
+   * @param {string} branchId - Branch identifier.
    * @param {string} category - Category name.
-   * @param {number} unitPrice - Selling price.
-   * @param {number} unitCost - Cost price.
-   * @param {number} currentStock - Current stock level.
+   * @param {string} name - Product name.
+   * @param {string} sku - Stock Keeping Unit.
+   * @param {string} description - Product description.
+   * @param {number} salePrice - Selling price.
    * @param {number} minimumStock - Minimum stock level for alerts.
+   * @param {number} currentStock - Current stock level.
+   * @param {Array} batches - List of product batches.
+   * @param {string} createdAt - Creation date.
+   * @param {string} updatedAt - Update date.
    */
-  constructor(id, sku, name, category, unitPrice, unitCost, currentStock, minimumStock) {
+  constructor(
+    id,
+    branchId,
+    category,
+    name,
+    sku,
+    description,
+    salePrice,
+    minimumStock,
+    currentStock = 0,
+    batches = [],
+    createdAt = null,
+    updatedAt = null
+  ) {
     this.id = id;
-    this.sku = sku;
-    this.name = name;
+    this.branchId = branchId;
     this.category = category;
-    this.unitPrice = unitPrice;
-    this.unitCost = unitCost;
-    this.currentStock = currentStock;
+    this.name = name;
+    this.sku = sku;
+    this.description = description;
+    this.salePrice = salePrice;
     this.minimumStock = minimumStock;
+    this.currentStock = currentStock;
+    this.batches = batches;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
   }
 
   /**
