@@ -8,7 +8,7 @@ export const environment = {
    * @type {string}
    */
   production: true,
-  platformProviderApiBaseUrl: 'https://atelier-backend-mock.onrender.com/api/v1',
+  platformProviderApiBaseUrl: 'http://localhost:5003/api/v1', // Updated to point to the real .NET backend locally
   platformProviderWorkshopsEndpointPath: '/workshops',
   platformProviderUsersEndpointPath: '/users',
   platformProviderPasswordRecoveryTokensEndpointPath: '/password_recovery_tokens',

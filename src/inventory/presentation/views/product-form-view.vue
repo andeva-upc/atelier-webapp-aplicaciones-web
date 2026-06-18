@@ -32,7 +32,7 @@ const saveProduct = async () => {
     try {
       const productEntity = new Product(
         null, // id
-        'e2667890-7890-466d-7890-ca7f62d12345', // branchId — seeded in db.json mock
+        '00000000-0000-0000-0000-000000000001', // branchId — UUID compatible with .NET Guid
         newProduct.value.category,
         newProduct.value.name,
         newProduct.value.sku,
