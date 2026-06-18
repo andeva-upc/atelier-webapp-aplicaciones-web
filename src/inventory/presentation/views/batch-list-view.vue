@@ -20,7 +20,7 @@ onMounted(async () => {
     try {
       await inventoryStore.fetchProductById(productId);
     } catch (err) {
-      toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar la información del producto.', life: 3000 });
+      toast.add({ severity: 'error', summary: t('inventory.messages.error'), detail: t('inventory.messages.load_error'), life: 3000 });
       router.push({ name: 'inventory' });
     }
   }
