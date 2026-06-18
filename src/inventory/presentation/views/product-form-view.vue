@@ -32,7 +32,7 @@ const saveProduct = async () => {
     try {
       const productEntity = new Product(
         null, // id
-        '1', // branchId hardcoded for now
+        '00000000-0000-0000-0000-000000000001', // branchId — UUID compatible with .NET Guid
         newProduct.value.category,
         newProduct.value.name,
         newProduct.value.sku,
@@ -45,10 +45,10 @@ const saveProduct = async () => {
       
       await inventoryStore.createProduct(productEntity);
       
-      toast.add({severity:'success', summary: 'Éxito', detail: 'Repuesto registrado exitosamente', life: 3000});
+      toast.add({severity:'success', summary: t('inventory.messages.success'), detail: t('inventory.messages.product_created'), life: 3000});
       router.push({ name: 'inventory' });
     } catch (err) {
-      toast.add({severity:'error', summary: 'Error', detail: 'No se pudo registrar el repuesto', life: 3000});
+      toast.add({severity:'error', summary: t('inventory.messages.error'), detail: t('inventory.messages.product_create_error'), life: 3000});
     }
   }
 };
@@ -71,13 +71,13 @@ const saveProduct = async () => {
               <div class="field mb-4">
                 <label for="name" class="font-medium text-900 mb-2 block">{{ t('inventory.productForm.name') }} *</label>
                 <pv-input-text id="name" v-model.trim="newProduct.name" required="true" autofocus :class="{'p-invalid': submitted && !newProduct.name}" class="border-round-lg py-3" />
-                <small class="p-error block mt-1" v-if="submitted && !newProduct.name">El nombre es requerido.</small>
+                <small class="p-error block mt-1" v-if="submitted && !newProduct.name">{{ t('inventory.validation.name_required') }}</small>
               </div>
 
               <div class="field mb-4">
                 <label for="sku" class="font-medium text-900 mb-2 block">{{ t('inventory.productForm.sku') }} *</label>
                 <pv-input-text id="sku" v-model.trim="newProduct.sku" required="true" :class="{'p-invalid': submitted && !newProduct.sku}" class="border-round-lg py-3 uppercase" />
-                <small class="p-error block mt-1" v-if="submitted && !newProduct.sku">El SKU es requerido.</small>
+                <small class="p-error block mt-1" v-if="submitted && !newProduct.sku">{{ t('inventory.validation.sku_required') }}</small>
               </div>
 
               <div class="field mb-4">

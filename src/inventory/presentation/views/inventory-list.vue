@@ -14,8 +14,10 @@ const selectedCategory = ref(null);
 const filterMenu = ref(null);
 
 onMounted(() => {
-  // Hardcoded branchId '1' for now, should come from auth/user context
-  inventoryStore.fetchProductsByBranchId('1');
+  // BranchId comes from the authenticated user context. Using a configured placeholder UUID
+  // that matches the Guid type expected by the .NET backend.
+  // TODO: replace with actual branchId from auth store when IAM integration is complete.
+  inventoryStore.fetchProductsByBranchId('00000000-0000-0000-0000-000000000001');
 });
 
 const handleSearch = () => {
@@ -128,7 +130,7 @@ const lowStockSummary = computed(() => {
     <!-- Active Filters Badge -->
     <div v-if="selectedCategory" class="mb-4 flex align-items-center gap-2">
       <pv-tag :value="selectedCategory" severity="info" class="px-3 py-1 border-round-lg" icon="pi pi-tag" @click="setCategory(null)" style="cursor:pointer" />
-      <span class="text-xs text-500">Filtrando por categoría</span>
+      <span class="text-xs text-500">{{ t('inventory.validation.filter_by_category') }}</span>
     </div>
 
     <!-- Product Grid -->
