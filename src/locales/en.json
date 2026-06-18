@@ -119,18 +119,63 @@
       "ok": "OK",
       "low_stock": "Low Stock"
     },
-    "form": {
-      "title": "New Spare Part",
+    "productDetail": {
+      "title": "Spare Part Details",
+      "back": "Back to inventory",
+      "viewBatches": "View batch history",
+      "sku": "SKU",
+      "category": "Category",
+      "description": "Description",
+      "salePrice": "Sale Price",
+      "minimumStock": "Minimum stock"
+    },
+    "productForm": {
+      "newTitle": "New Spare Part",
+      "editTitle": "Edit Spare Part",
       "name": "Spare part name",
       "sku": "SKU",
       "category": "Category",
-      "brand": "Brand",
-      "unit_price": "Unit price",
-      "unit_cost": "Unit cost",
-      "current_stock": "Initial stock",
-      "minimum_stock": "Minimum stock",
-      "save": "Save",
+      "description": "Description",
+      "salePrice": "Sale Price",
+      "minimumStock": "Minimum stock",
+      "save": "Save spare part",
       "cancel": "Cancel"
+    },
+    "batchList": {
+      "title": "Batch History",
+      "back": "Back to details",
+      "newBatch": "Register new batch",
+      "columns": {
+        "id": "Batch ID",
+        "date": "Entry Date",
+        "initialQuantity": "Initial Qty",
+        "availableQuantity": "Available Qty",
+        "cost": "Acquisition Cost"
+      },
+      "empty": "No batches registered for this spare part."
+    },
+    "batchForm": {
+      "newTitle": "Register New Batch",
+      "quantity": "Entry Quantity",
+      "cost": "Total Acquisition Cost",
+      "save": "Register batch",
+      "cancel": "Cancel"
+    },
+    "messages": {
+      "product_created": "Spare part registered successfully",
+      "product_create_error": "Could not register the spare part",
+      "batch_created": "Batch registered successfully",
+      "batch_create_error": "Could not register the batch",
+      "load_error": "Could not load product information",
+      "success": "Success",
+      "error": "Error"
+    },
+    "validation": {
+      "name_required": "Name is required.",
+      "sku_required": "SKU is required.",
+      "quantity_required": "Quantity must be greater than 0.",
+      "cost_required": "Cost cannot be negative.",
+      "filter_by_category": "Filtering by category"
     }
   },
   "telemetry": {

@@ -119,18 +119,63 @@
       "ok": "OK",
       "low_stock": "Stock bajo"
     },
-    "form": {
-      "title": "Nuevo Repuesto",
+    "productDetail": {
+      "title": "Detalle de Repuesto",
+      "back": "Volver a inventario",
+      "viewBatches": "Ver historial de lotes",
+      "sku": "SKU",
+      "category": "Categoría",
+      "description": "Descripción",
+      "salePrice": "Precio de Venta",
+      "minimumStock": "Stock mínimo"
+    },
+    "productForm": {
+      "newTitle": "Nuevo Repuesto",
+      "editTitle": "Editar Repuesto",
       "name": "Nombre del repuesto",
       "sku": "SKU",
       "category": "Categoría",
-      "brand": "Marca",
-      "unit_price": "Precio unitario",
-      "unit_cost": "Costo unitario",
-      "current_stock": "Stock inicial",
-      "minimum_stock": "Stock mínimo",
-      "save": "Guardar",
+      "description": "Descripción",
+      "salePrice": "Precio de Venta",
+      "minimumStock": "Stock mínimo",
+      "save": "Guardar repuesto",
       "cancel": "Cancelar"
+    },
+    "batchList": {
+      "title": "Historial de Lotes",
+      "back": "Volver a detalles",
+      "newBatch": "Registrar nuevo lote",
+      "columns": {
+        "id": "ID Lote",
+        "date": "Fecha de Ingreso",
+        "initialQuantity": "Cant. Inicial",
+        "availableQuantity": "Cant. Disponible",
+        "cost": "Costo Adquisición"
+      },
+      "empty": "No hay lotes registrados para este repuesto."
+    },
+    "batchForm": {
+      "newTitle": "Registrar Nuevo Lote",
+      "quantity": "Cantidad a ingresar",
+      "cost": "Costo de adquisición total",
+      "save": "Registrar lote",
+      "cancel": "Cancelar"
+    },
+    "messages": {
+      "product_created": "Repuesto registrado exitosamente",
+      "product_create_error": "No se pudo registrar el repuesto",
+      "batch_created": "Lote registrado exitosamente",
+      "batch_create_error": "No se pudo registrar el lote",
+      "load_error": "No se pudo cargar la información del producto",
+      "success": "Éxito",
+      "error": "Error"
+    },
+    "validation": {
+      "name_required": "El nombre es requerido.",
+      "sku_required": "El SKU es requerido.",
+      "quantity_required": "La cantidad debe ser mayor a 0.",
+      "cost_required": "El costo no puede ser negativo.",
+      "filter_by_category": "Filtrando por categoría"
     }
   },
   "telemetry": {
