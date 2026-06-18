@@ -1,4 +1,13 @@
 {
+  "common": {
+    "retry": "Reintentar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "back": "Volver"
+  },
   "option": {
     "home": "Inicio",
     "work-orders": "Órdenes de Trabajo",
