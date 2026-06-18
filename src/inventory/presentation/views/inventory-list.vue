@@ -14,10 +14,9 @@ const selectedCategory = ref(null);
 const filterMenu = ref(null);
 
 onMounted(() => {
-  // BranchId comes from the authenticated user context. Using a configured placeholder UUID
-  // that matches the Guid type expected by the .NET backend.
-  // TODO: replace with actual branchId from auth store when IAM integration is complete.
-  inventoryStore.fetchProductsByBranchId('00000000-0000-0000-0000-000000000001');
+  // BranchId 'e2667890-7890-466d-7890-ca7f62d12345' corresponds to the branch seeded in db.json
+  // TODO: replace with branchId from the authenticated user's profile once IAM is integrated.
+  inventoryStore.fetchProductsByBranchId('e2667890-7890-466d-7890-ca7f62d12345');
 });
 
 const handleSearch = () => {
