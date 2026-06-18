@@ -5,14 +5,16 @@ import { environment } from '../../environments/environment.js';
 /**
  * InventoryApi.
  * Infrastructure service for handling HTTP requests related to the Products (Inventory) resource.
+ * Base URL: {platformProviderApiBaseUrl}/inventory/products
  */
 export class InventoryApi extends BaseApiEndpoint {
   constructor() {
-    super(`${environment.apiBaseUrl}/inventory/products`, new ProductAssembler());
+    super(`${environment.platformProviderApiBaseUrl}/inventory/products`, new ProductAssembler());
   }
 
   /**
    * Fetches products by branch ID.
+   * Calls GET /api/v1/inventory/products/branch/{branchId}
    * @param {string} branchId 
    * @returns {Promise<Array>} A list of product entities.
    */
@@ -31,9 +33,10 @@ export class InventoryApi extends BaseApiEndpoint {
 
   /**
    * Adds a new batch to a product.
+   * Calls POST /api/v1/inventory/products/{productId}/batches
    * @param {string} productId 
    * @param {Object} batchData { quantity, acquisitionCost }
-   * @returns {Promise<Object>} The added batch.
+   * @returns {Promise<Object>} The added batch resource.
    */
   async addBatch(productId, batchData) {
     try {
