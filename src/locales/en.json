@@ -1,4 +1,13 @@
 {
+  "common": {
+    "retry": "Retry",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "back": "Back"
+  },
   "option": {
     "home": "Home",
     "work-orders": "Work Orders",
