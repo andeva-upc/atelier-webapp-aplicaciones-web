@@ -160,6 +160,22 @@
       "cost": "Costo de adquisición total",
       "save": "Registrar lote",
       "cancel": "Cancelar"
+    },
+    "messages": {
+      "product_created": "Repuesto registrado exitosamente",
+      "product_create_error": "No se pudo registrar el repuesto",
+      "batch_created": "Lote registrado exitosamente",
+      "batch_create_error": "No se pudo registrar el lote",
+      "load_error": "No se pudo cargar la información del producto",
+      "success": "Éxito",
+      "error": "Error"
+    },
+    "validation": {
+      "name_required": "El nombre es requerido.",
+      "sku_required": "El SKU es requerido.",
+      "quantity_required": "La cantidad debe ser mayor a 0.",
+      "cost_required": "El costo no puede ser negativo.",
+      "filter_by_category": "Filtrando por categoría"
     }
   },
   "telemetry": {

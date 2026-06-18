@@ -47,10 +47,10 @@ const saveBatch = async () => {
       
       await inventoryStore.addBatchToProduct(productId, payload);
       
-      toast.add({severity:'success', summary: 'Éxito', detail: 'Lote registrado exitosamente', life: 3000});
+      toast.add({severity:'success', summary: t('inventory.messages.success'), detail: t('inventory.messages.batch_created'), life: 3000});
       router.push({ name: 'batch-list', params: { id: productId } });
     } catch (err) {
-      toast.add({severity:'error', summary: 'Error', detail: 'No se pudo registrar el lote', life: 3000});
+      toast.add({severity:'error', summary: t('inventory.messages.error'), detail: t('inventory.messages.batch_create_error'), life: 3000});
     }
   }
 };
@@ -90,7 +90,7 @@ const saveBatch = async () => {
                   incrementButtonIcon="pi pi-plus" 
                   decrementButtonIcon="pi pi-minus" 
                 />
-                <small class="p-error block mt-1" v-if="submitted && (!batchData.quantity || batchData.quantity <= 0)">La cantidad debe ser mayor a 0.</small>
+                <small class="p-error block mt-1" v-if="submitted && (!batchData.quantity || batchData.quantity <= 0)">{{ t('inventory.validation.quantity_required') }}</small>
               </div>
 
               <div class="field mb-4">
@@ -105,7 +105,7 @@ const saveBatch = async () => {
                   inputClass="py-3" 
                   :class="{'p-invalid': submitted && (batchData.acquisitionCost === null || batchData.acquisitionCost < 0)}"
                 />
-                <small class="p-error block mt-1" v-if="submitted && (batchData.acquisitionCost === null || batchData.acquisitionCost < 0)">El costo no puede ser negativo.</small>
+                <small class="p-error block mt-1" v-if="submitted && (batchData.acquisitionCost === null || batchData.acquisitionCost < 0)">{{ t('inventory.validation.cost_required') }}</small>
               </div>
 
               <div class="flex justify-content-end gap-3 mt-5">

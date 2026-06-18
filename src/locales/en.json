@@ -160,6 +160,22 @@
       "cost": "Total Acquisition Cost",
       "save": "Register batch",
       "cancel": "Cancel"
+    },
+    "messages": {
+      "product_created": "Spare part registered successfully",
+      "product_create_error": "Could not register the spare part",
+      "batch_created": "Batch registered successfully",
+      "batch_create_error": "Could not register the batch",
+      "load_error": "Could not load product information",
+      "success": "Success",
+      "error": "Error"
+    },
+    "validation": {
+      "name_required": "Name is required.",
+      "sku_required": "SKU is required.",
+      "quantity_required": "Quantity must be greater than 0.",
+      "cost_required": "Cost cannot be negative.",
+      "filter_by_category": "Filtering by category"
     }
   },
   "telemetry": {
