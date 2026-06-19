@@ -16,7 +16,9 @@ const options = [
   { link: '/work-orders', label: 'option.work-orders', icon: 'pi pi-wrench' },
   { link: '/telemetry', label: 'option.telemetry', icon: 'pi pi-chart-line' },
   { link: '/customers', label: 'option.customers', icon: 'pi pi-users' },
-  { link: '/appointments', label: 'option.appointments', icon: 'pi pi-calendar' },
+  { link: '/fleet/appointments', label: 'option.appointments', icon: 'pi pi-calendar' }, // Corrected
+  { link: '/fleet/vehicles', label: 'option.vehicles', icon: 'pi pi-car' }, // Added
+  { link: '/fleet/workbays', label: 'option.workbays', icon: 'pi pi-th-large' }, // Added
   { link: '/billing', label: 'option.billing', icon: 'pi pi-receipt' },
   { link: '/inventory', label: 'option.inventory', icon: 'pi pi-box' },
   { link: '/configuration', label: 'option.configuration', icon: 'pi pi-cog' },
