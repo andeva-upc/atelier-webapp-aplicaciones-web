@@ -42,7 +42,7 @@ export class AppointmentAssembler extends BaseAssembler {
         resource.version ?? 0,
         resource.customer_id ?? null,
         resource.vehicle_id ?? null,
-        resource.deleted_at ?? null
+        resource.deletedAt ?? null
     );
   }
 
