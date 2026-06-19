@@ -25,8 +25,10 @@
  * @property {object} [vehicleModel]
  * @property {object} [branch]
  */
+export const AppointmentResponse = {}; // Export to make it resolvable
 
 /**
  * @typedef {object} AppointmentsListResponse
  * @property {AppointmentResponse[]} data
  */
+export const AppointmentsListResponse = {}; // Export to make it resolvable

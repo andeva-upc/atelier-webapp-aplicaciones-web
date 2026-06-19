@@ -11,8 +11,10 @@
  * @property {string} updated_at
  * @property {string} [deleted_at]
  */
+export const VehicleResponse = {}; // Export to make it resolvable
 
 /**
  * @typedef {object} VehiclesListResponse
  * @property {VehicleResponse[]} data
  */
+export const VehiclesListResponse = {}; // Export to make it resolvable

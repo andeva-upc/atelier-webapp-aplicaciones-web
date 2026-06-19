@@ -1,4 +1,4 @@
-import { BaseEntity } from '../../../../shared/domain/model/base-entity.js';
+import { BaseEntity } from '../../../shared/domain/model/base-entity.js';
 
 export const BayStatus = Object.freeze({
   VACANT: 'VACANT',

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Vehicle } from '../../domain/model/vehicle.entity.js';
-import { environment } from '../../../../environments/environment.js';
+import { environment } from '../../../environments/environment.js'; // Corrected import path
 
 const props = defineProps({
   visible: Boolean,

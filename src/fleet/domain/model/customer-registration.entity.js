@@ -1,4 +1,4 @@
-import { BaseEntity } from '../../../../shared/domain/model/base-entity.js';
+import { BaseEntity } from '../../../shared/domain/model/base-entity.js';
 
 /**
  * @typedef {object} CustomerRegistration

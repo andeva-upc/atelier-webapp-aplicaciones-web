@@ -2,7 +2,7 @@
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { WorkBay, BayStatus } from '../../domain/model/workbay.entity.js';
-import { environment } from '../../../../environments/environment.js';
+import { environment } from '../../../environments/environment.js'; // Corrected import path
 import axios from 'axios';
 
 const props = defineProps({

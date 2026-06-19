@@ -1,4 +1,4 @@
-import { BaseEntity } from '../../../../shared/domain/model/base-entity.js';
+import { BaseEntity } from '../../../shared/domain/model/base-entity.js';
 
 /**
  * @typedef {object} EmployeeRegistration
@@ -7,6 +7,7 @@ import { BaseEntity } from '../../../../shared/domain/model/base-entity.js';
  * @property {string} employeeId
  * @property {string} specialtyId
  * @property {number} salary
+ *
  * @property {string} registeredAt
  * @property {string | null} unregisteredAt
  */

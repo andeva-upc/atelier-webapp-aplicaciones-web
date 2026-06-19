@@ -8,8 +8,10 @@
  * @property {string} registered_at
  * @property {string | null} [unregistered_at]
  */
+export const EmployeeRegistrationResponse = {}; // Export to make it resolvable
 
 /**
  * @typedef {object} EmployeeRegistrationsListResponse
  * @property {EmployeeRegistrationResponse[]} data
  */
+export const EmployeeRegistrationsListResponse = {}; // Export to make it resolvable
