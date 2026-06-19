@@ -1,21 +1,55 @@
 import axios from 'axios';
-import { BaseApiEndpoint } from '../../shared/infrastructure/base-api-endpoint.js';
 import { AppointmentAssembler } from './appointment.assembler.js';
 import { environment } from '../../environments/environment.js';
+import { AppointmentsApiEndpoint } from './appointments-api-endpoint.js';
+import { AppointmentRepository } from '../domain/repositories/appointment.repository.js';
 
 /**
  * AppointmentsApi.
- * Infrastructure service for appointment HTTP operations.
+ * Infrastructure service for appointment HTTP operations, implementing the AppointmentRepository contract.
  */
-export class AppointmentsApi extends BaseApiEndpoint {
+export class AppointmentsApi extends AppointmentRepository {
   constructor() {
-    const endpointUrl = `${environment.platformProviderApiBaseUrl}${environment.platformProviderAppointmentsEndpointPath}`;
-
-    super(endpointUrl, new AppointmentAssembler());
-
+    super();
+    this.appointmentsEndpoint = new AppointmentsApiEndpoint();
+    this.assembler = new AppointmentAssembler(); // Keep assembler for complex mapping in getAppointmentsWithRelations
     this.baseUrl = environment.platformProviderApiBaseUrl;
   }
 
+  /**
+   * @returns {Promise<Appointment[]>}
+   */
+  async getAll() {
+    const response = await this.appointmentsEndpoint.getAll();
+    return this.assembler.toEntitiesFromResponse(response);
+  }
+
+  /**
+   * @param {Appointment} appointment
+   * @returns {Promise<Appointment>}
+   */
+  async create(appointment) {
+    const resource = this.assembler.toResourceFromEntity(appointment);
+    const response = await this.appointmentsEndpoint.create(resource);
+    return this.assembler.toEntityFromResource(response);
+  }
+
+  /**
+   * @param {string} id
+   * @param {Appointment} appointment
+   * @returns {Promise<Appointment>}
+   */
+  async update(id, appointment) {
+    const resource = this.assembler.toResourceFromEntity(appointment);
+    const response = await this.appointmentsEndpoint.update(id, resource);
+    return this.assembler.toEntityFromResource(response);
+  }
+
+  async delete(id) {
+    await this.appointmentsEndpoint.delete(id);
+  }
+
+  // This method contains complex orchestration logic and remains in the facade for now.
   async getAppointmentsWithRelations(query = '') {
     const [
       appointmentsResponse,
@@ -25,7 +59,7 @@ export class AppointmentsApi extends BaseApiEndpoint {
       vehicleModelsResponse,
       branchesResponse
     ] = await Promise.all([
-      this.http.get(''),
+      this.appointmentsEndpoint.http.get(''), // Use the http client from the endpoint
       axios.get(`${this.baseUrl}${environment.platformProviderUsersEndpointPath}`),
       axios.get(`${this.baseUrl}${environment.platformProviderCustomerProfilesEndpointPath}`),
       axios.get(`${this.baseUrl}${environment.platformProviderVehiclesEndpointPath}`),
@@ -36,7 +70,7 @@ export class AppointmentsApi extends BaseApiEndpoint {
     const appointments = this.toArray(appointmentsResponse);
     const users = this.toArray(usersResponse);
     const customerProfiles = this.toArray(customerProfilesResponse);
-    const vehicles = this.toArray(vehiclesResponse);
+    const rawVehicles = this.toArray(vehiclesResponse);
     const vehicleModels = this.toArray(vehicleModelsResponse);
     const branches = this.toArray(branchesResponse);
 
@@ -53,7 +87,7 @@ export class AppointmentsApi extends BaseApiEndpoint {
     );
 
     const vehiclesById = new Map(
-        vehicles
+        rawVehicles
             .filter((vehicle) => !vehicle.deleted_at)
             .map((vehicle) => [vehicle.id, vehicle])
     );

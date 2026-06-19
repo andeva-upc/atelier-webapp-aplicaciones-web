@@ -2,11 +2,11 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { useAppointmentsStore } from '../../application/appointments.store.js';
+import { useFleetStore } from '../../application/fleet.store.js'; // Corrected import
 import { AppointmentStatus } from '../../domain/model/appointment.entity.js';
 import AppointmentsForm from './appointments-form.vue';
 
-const store = useAppointmentsStore();
+const store = useFleetStore(); // Corrected usage
 const { t } = useI18n();
 const router = useRouter();
 const route = useRoute();
@@ -28,7 +28,8 @@ const filters = computed(() => [
 ]);
 
 const filteredAppointments = computed(() => {
-  return store.activeAppointments.filter((appointment) => {
+  // Assuming useFleetStore will expose appointments directly or through a getter
+  return store.appointments.filter((appointment) => { // Assuming 'appointments' is now directly on store state
     if (selectedFilter.value === 'ALL') return true;
     if (selectedFilter.value === 'CONFIRMED') return appointment.isConfirmed();
     if (selectedFilter.value === 'PENDING') return appointment.status === AppointmentStatus.PENDING_APPROVAL;
@@ -72,7 +73,8 @@ const syncFormWithRoute = () => {
 
   if (route.name === 'appointments-edit') {
     const appointmentId = route.params.id;
-    const appointment = store.activeAppointments.find((item) => item.id === appointmentId);
+    // Assuming 'appointments' is now directly on store state
+    const appointment = store.appointments.find((item) => item.id === appointmentId);
 
     if (appointment) {
       formMode.value = 'edit';
@@ -93,6 +95,7 @@ const openCreateForm = () => {
 
 const openDetail = (appointment) => {
   selectedAppointment.value = appointment;
+  // Assuming selectAppointment is still a method on the store
   store.selectAppointment(appointment);
   showDetail.value = true;
 };
@@ -123,9 +126,9 @@ const handleFormVisibility = (value) => {
 
 const handleSaveAppointment = async (appointment) => {
   if (formMode.value === 'create') {
-    await store.addAppointment(appointment);
+    await store.addAppointment(appointment); // Assuming addAppointment is still a method on the store
   } else {
-    await store.updateAppointment(appointment);
+    await store.updateAppointment(appointment); // Assuming updateAppointment is still a method on the store
   }
 
   showForm.value = false;
@@ -136,7 +139,7 @@ const handleSaveAppointment = async (appointment) => {
 watch(searchQuery, (query) => {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => {
-    store.searchAppointments(query.trim());
+    store.searchAppointments(query.trim()); // Assuming searchAppointments is still a method on the store
   }, 300);
 });
 
@@ -148,14 +151,14 @@ watch(
 );
 
 watch(
-    () => store.appointments.length,
+    () => store.appointments.length, // Assuming 'appointments' is now directly on store state
     () => {
       syncFormWithRoute();
     }
 );
 
 onMounted(async () => {
-  await store.fetchAppointments();
+  await store.fetchAppointments(); // Assuming fetchAppointments is still a method on the store
   syncFormWithRoute();
 });
 </script>
@@ -165,7 +168,7 @@ onMounted(async () => {
     <header class="view-header">
       <div class="title-container">
         <h1 class="view-title">{{ t('appointments.title') }}</h1>
-        <p class="view-subtitle">{{ t('appointments.subtitle', { count: store.totalAppointments }) }}</p>
+        <p class="view-subtitle">{{ t('appointments.subtitle', { count: store.appointments.length }) }}</p>
       </div>
 
       <pv-button
@@ -178,7 +181,7 @@ onMounted(async () => {
 
     <section class="summary-grid" :aria-label="t('appointments.aria.summary')">
       <article class="summary-card summary-total">
-        <strong>{{ store.totalAppointments }}</strong>
+        <strong>{{ store.appointments.length }}</strong>
         <span>{{ t('appointments.stats.total') }}</span>
       </article>
 
