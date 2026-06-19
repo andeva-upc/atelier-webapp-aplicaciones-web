@@ -1,7 +1,7 @@
 import { BaseEntity } from '../../../shared/domain/model/base-entity.js';
 
 export const AppointmentStatus = Object.freeze({
-  SCHEDULED: 'SCHEDULEED',
+  SCHEDULED: 'SCHEDULED',
   PENDING_APPROVAL: 'PENDING_APPROVAL',
   IN_PROGRESS: 'IN_PROGRESS',
   COMPLETED: 'COMPLETED',
