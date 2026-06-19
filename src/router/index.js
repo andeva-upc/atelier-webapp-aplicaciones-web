@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { customersRoutes } from '../customers/presentation/customers-routes.js';
 import { dashboardRoutes } from '../home/presentation/dashboard-routes.js';
-import { fleetRoutes } from '../fleet/presentation/fleet-routes.js'; // Updated import
+import { appointmentsRoutes } from '../fleet/presentation/appointments-routes.js';
 import { inventoryRoutes } from '../inventory/presentation/inventory-routes.js';
 import { telemetryRoutes } from '../telemetry/presentation/telemetry-routes.js';
 import { billingRoutes } from '../billing/presentation/billing-routes.js';
@@ -19,7 +19,7 @@ const router = createRouter({
     },
     ...dashboardRoutes,
     ...customersRoutes,
-    ...fleetRoutes, // Updated to use fleetRoutes
+    ...appointmentsRoutes,
     ...inventoryRoutes,
     ...telemetryRoutes,
     ...billingRoutes

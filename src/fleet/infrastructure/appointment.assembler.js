@@ -1,16 +1,11 @@
 import { Appointment, AppointmentStatus } from '../domain/model/appointment.entity.js';
 import { BaseAssembler } from '../../shared/infrastructure/base-assembler.js';
-import { AppointmentResponse, AppointmentsListResponse } from './appointments-response.js';
 
 /**
  * AppointmentAssembler.
  * Maps backend appointment resources to Appointment domain entities.
  */
 export class AppointmentAssembler extends BaseAssembler {
-  /**
-   * @param {AppointmentResponse} resource
-   * @returns {Appointment}
-   */
   toEntityFromResource(resource) {
     const customerProfile = resource.customerProfile || null;
     const customerUser = resource.customerUser || null;
@@ -51,10 +46,6 @@ export class AppointmentAssembler extends BaseAssembler {
     );
   }
 
-  /**
-   * @param {Appointment} entity
-   * @returns {AppointmentResponse}
-   */
   toResourceFromEntity(entity) {
     return {
       id: entity.id,
@@ -75,20 +66,11 @@ export class AppointmentAssembler extends BaseAssembler {
     };
   }
 
-  /**
-   * @param {AppointmentsListResponse | AppointmentResponse[]} response
-   * @returns {Appointment[]}
-   */
   toEntitiesFromResponse(response) {
     const data = Array.isArray(response) ? response : response.data || [];
     return data.map((resource) => this.toEntityFromResource(resource));
   }
 
-  /**
-   * @param {object} customerProfile
-   * @param {AppointmentResponse} resource
-   * @returns {string}
-   */
   resolveCustomerName(customerProfile, resource) {
     if (!customerProfile) {
       return resource.pre_registered_full_name || 'Cliente sin registrar';
